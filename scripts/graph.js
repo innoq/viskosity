@@ -15,11 +15,11 @@ function Graph(container, settings) {
 	settings = settings || {};
 
 	// XXX: unnecessary jQuery dependency?
-	this.container = container.jquery ? container : $(container);
-	this.width = settings.width || this.container.width();
-	this.height = settings.height || this.container.height();
+	container = container.jquery ? container : $(container);
+	this.width = settings.width || container.width();
+	this.height = settings.height || container.height();
 
-	this.root = d3.select("#viz").append("svg").
+	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
 	this.graph = d3.layout.force().
 			charge(this.charge).linkDistance(this.linkDistance). // TODO: (re)calculate dynamically to account for graph size
