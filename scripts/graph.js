@@ -53,13 +53,18 @@ graph.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").
 			data(this.data.edges).
 			enter().
-			append("line").attr("class", "edge link").style("stroke-width",
-					function(item) { return Math.sqrt(item.value * 3); });
+			append("line"). // TODO: customizable
+					attr("class", "edge link").
+					style("stroke-width", function(item) {
+						return Math.sqrt(item.value * 3);
+					});
 
 	var nodes = this.root.selectAll("circle.node").
 			data(this.data.nodes).
 			enter().
-			append("circle").attr("class", "node").attr("r", 15).
+			append("circle"). // TODO: customizable
+					attr("class", "node").
+					attr("r", 15).
 					style("fill", this.colorize).
 			call(this.graph.drag); // XXX: ?
 	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
@@ -86,29 +91,3 @@ prop = function() { // TODO: memoize
 return graph;
 
 }(jQuery));
-
-
-/*
-XXX: DEBUG
-*/
-
-var data = {
-	nodes: [
-		{ name: "FND", group: 1 },
-		{ name: "cdent", group: 2 },
-		{ name: "imexil", group: 1 },
-		{ name: "jdlrobson", group: 3 },
-		{ name: "zac", group: 3 },
-		{ name: "tillsc", group: 1 }
-	],
-	edges: [
-		{ source: 0, target: 1, value: 4 },
-		{ source: 0, target: 2, value: 2 },
-		{ source: 0, target: 3, value: 1 },
-		{ source: 0, target: 5, value: 2 },
-		{ source: 1, target: 4, value: 3 }
-	]
-};
-
-var graph = Object.create(VISKOSITY.graph);
-graph.init("#viz", data, { height: 500 });
