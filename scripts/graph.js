@@ -20,8 +20,8 @@ var graph = {
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
 // `settings` is an optional set of key-value pairs for width and height
 // `settings.provider` is a function which is used to retrieve additional data -
-// this function is passed the respective node along with the entire data set
-// and expected to return an object with arrays for `nodes` and `edges`
+// it is passed the respective node along with the full data set and a callback,
+// to which it should pass an object with arrays for `nodes` and `edges`
 graph.init = function(container, data, settings) {
 	settings = settings || {};
 
@@ -47,14 +47,7 @@ graph.onClick = function(item) {
 	if(!this.provider) {
 		return;
 	}
-	var newData = this.provider(item) || {};
-	var nodes = newData.nodes || [];
-	var edges = newData.edges || [];
-	if(nodes.length || edges.length) {
-		$.each(nodes, pusher(this.data.nodes));
-		$.each(edges, pusher(this.data.edges));
-		this.render();
-	}
+	this.provider(item, this.data, $.proxy(this.addData, this));
 };
 graph.onTick = function() {
 	this.root.selectAll("line.link").
@@ -65,6 +58,13 @@ graph.onTick = function() {
 	this.root.selectAll("circle.node").
 			attr("cx", prop("x")).
 			attr("cy", prop("y"));
+};
+graph.addData = function(data) {
+	if(data.nodes.length || data.edges.length) {
+		$.each(data.nodes, pusher(this.data.nodes));
+		$.each(data.edges, pusher(this.data.edges));
+		this.render();
+	}
 };
 graph.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").

@@ -31,7 +31,7 @@ var data = {
 	]
 };
 
-var provider = function(node) {
+var provider = function(node, data, callback) {
 	var node = { name: "robertg", group: 1 };
 
 	var edges = [
@@ -39,7 +39,7 @@ var provider = function(node) {
 		{ source: 5, target: 6, value: 3 }
 	];
 
-	return { nodes: [node], edges: edges };
+	callback({ nodes: [node], edges: edges });
 };
 
 var graph = Object.create(VISKOSITY.graph);
