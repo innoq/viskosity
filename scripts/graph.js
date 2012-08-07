@@ -29,7 +29,9 @@ function Graph(container, settings) {
 Graph.prototype = {
 	charge: -120,
 	linkDistance: 30,
-	getColor: d3.scale.category20() // XXX: bad default? -- TODO: rename?
+	colorize: (function(fn) { // TODO: rename
+		return function(item) { return fn(item.group); };
+	}(d3.scale.category20())) // XXX: bad default?
 };
 Graph.prototype.onTick = function() { // XXX: arguments?
 	this.link.attr("x1", prop("source", "x")).
@@ -39,7 +41,6 @@ Graph.prototype.onTick = function() { // XXX: arguments?
 	this.node.attr("cx", prop("x")).attr("cy", prop("y"));
 };
 Graph.prototype.render = function(data) {
-	var self = this;
 	this.graph.nodes(data.nodes).links(data.edges).start();
 
 	this.link = this.root.selectAll("line.link").
@@ -51,8 +52,8 @@ Graph.prototype.render = function(data) {
 	this.node = this.root.selectAll("circle.node").
 			data(data.nodes). // XXX: isn't this redundant? (cf. `graph` initialization)
 			enter().
-			append("circle").attr("class", "node").attr("r", 15).style("fill",
-					function(item) { return self.getColor(item.group); }).
+			append("circle").attr("class", "node").attr("r", 15).
+					style("fill", this.colorize).
 			call(this.graph.drag); // XXX: ?
 	this.node.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
 };
