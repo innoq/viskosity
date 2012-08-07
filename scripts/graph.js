@@ -9,9 +9,10 @@ VISKOSITY.Graph = (function($) {
 
 var prop;
 
-// container may be a DOM node or jQuery selector
-// settings is an optional set of key-value pairs
-function Graph(container, settings) {
+// `container` may be a DOM node, selector or jQuery object
+// `data` is the initial data set, an object with arrays for nodes and edges
+// `settings` is an optional set of key-value pairs
+function Graph(container, data, settings) {
 	settings = settings || {};
 
 	// XXX: unnecessary jQuery dependency?
@@ -19,12 +20,17 @@ function Graph(container, settings) {
 	this.width = settings.width || container.width();
 	this.height = settings.height || container.height();
 
+	this.data = data;
 	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
 	this.graph = d3.layout.force().
 			charge(this.charge).linkDistance(this.linkDistance). // TODO: (re)calculate dynamically to account for graph size
-			size([this.width, this.height]).
-			on("tick", $.proxy(this.onTick, this));
+			size([this.width, this.height]);
+
+	this.graph.nodes(this.data.nodes).links(this.data.edges);
+	this.render();
+
+	this.graph.on("tick", $.proxy(this.onTick, this));
 }
 Graph.prototype = {
 	charge: -120,
@@ -33,7 +39,7 @@ Graph.prototype = {
 		return function(item) { return fn(item.group); };
 	}(d3.scale.category20())) // XXX: bad default?
 };
-Graph.prototype.onTick = function() { // XXX: arguments?
+Graph.prototype.onTick = function() {
 	this.root.selectAll("line.link").
 			attr("x1", prop("source", "x")).
 			attr("y1", prop("source", "y")).
@@ -43,22 +49,22 @@ Graph.prototype.onTick = function() { // XXX: arguments?
 			attr("cx", prop("x")).
 			attr("cy", prop("y"));
 };
-Graph.prototype.render = function(data) {
-	this.graph.nodes(data.nodes).links(data.edges).start();
-
+Graph.prototype.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").
-			data(data.edges).
+			data(this.data.edges).
 			enter().
 			append("line").attr("class", "edge link").style("stroke-width",
 					function(item) { return Math.sqrt(item.value * 3); });
 
 	var nodes = this.root.selectAll("circle.node").
-			data(data.nodes).
+			data(this.data.nodes).
 			enter().
 			append("circle").attr("class", "node").attr("r", 15).
 					style("fill", this.colorize).
 			call(this.graph.drag); // XXX: ?
 	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
+
+	this.graph.start();
 };
 
 // convenience wrapper
@@ -104,4 +110,4 @@ var data = {
 	]
 };
 
-(new VISKOSITY.Graph("#viz", { height: 500 })).render(data);
+var graph = new VISKOSITY.Graph("#viz", data, { height: 500 });
