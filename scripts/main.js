@@ -30,9 +30,15 @@ var data = {
 		{ source: 1, target: 4, value: 3 }
 	]
 };
+jQuery.each(data.nodes, function(i, node) {
+	node.id = node.name;
+});
+jQuery.each(data.edges, function(i, edge) {
+	edge.id = [edge.source, edge.target].join("");
+});
 
 var provider = function(node, data, callback) {
-	var node = { name: "robertg", group: 1 };
+	node = { name: "robertg", group: 1 };
 
 	var edges = [
 		{ source: 0, target: 6, value: 2 },

@@ -14,7 +14,8 @@ var graph = {
 	linkDistance: 30,
 	colorize: (function(fn) { // TODO: rename
 		return function(item) { return fn(item.group); };
-	}(d3.scale.category20())) // XXX: bad default?
+	}(d3.scale.category20())), // XXX: bad default?
+	identity: function(item) { return item.id; } // XXX: bad expectation?
 };
 // `container` may be a DOM node, selector or jQuery object
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
@@ -68,7 +69,7 @@ graph.addData = function(data) {
 };
 graph.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").
-			data(this.data.edges).
+			data(this.data.edges, this.identity).
 			enter().
 			append("line"). // TODO: customizable
 				attr("class", "edge link").
@@ -77,7 +78,7 @@ graph.render = function() { // TODO: rename?
 				});
 
 	var nodes = this.root.selectAll("circle.node").
-			data(this.data.nodes).
+			data(this.data.nodes, this.identity).
 			enter().
 			append("circle"). // TODO: customizable
 				attr("class", "node").
