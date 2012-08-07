@@ -34,28 +34,31 @@ Graph.prototype = {
 	}(d3.scale.category20())) // XXX: bad default?
 };
 Graph.prototype.onTick = function() { // XXX: arguments?
-	this.link.attr("x1", prop("source", "x")).
+	this.root.selectAll("line.link").
+			attr("x1", prop("source", "x")).
 			attr("y1", prop("source", "y")).
 			attr("x2", prop("target", "x")).
 			attr("y2", prop("target", "y"));
-	this.node.attr("cx", prop("x")).attr("cy", prop("y"));
+	this.root.selectAll("circle.node").
+			attr("cx", prop("x")).
+			attr("cy", prop("y"));
 };
 Graph.prototype.render = function(data) {
 	this.graph.nodes(data.nodes).links(data.edges).start();
 
-	this.link = this.root.selectAll("line.link").
-			data(data.edges). // XXX: isn't this redundant? (cf. `graph` initialization)
+	this.root.selectAll("line.link").
+			data(data.edges).
 			enter().
 			append("line").attr("class", "edge link").style("stroke-width",
 					function(item) { return Math.sqrt(item.value * 3); });
 
-	this.node = this.root.selectAll("circle.node").
-			data(data.nodes). // XXX: isn't this redundant? (cf. `graph` initialization)
+	var nodes = this.root.selectAll("circle.node").
+			data(data.nodes).
 			enter().
 			append("circle").attr("class", "node").attr("r", 15).
 					style("fill", this.colorize).
 			call(this.graph.drag); // XXX: ?
-	this.node.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
+	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
 };
 
 // convenience wrapper
