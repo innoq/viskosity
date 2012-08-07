@@ -71,18 +71,18 @@ graph.render = function() { // TODO: rename?
 			data(this.data.edges).
 			enter().
 			append("line"). // TODO: customizable
-					attr("class", "edge link").
-					style("stroke-width", function(item) {
-						return Math.sqrt(item.value * 3);
-					});
+				attr("class", "edge link").
+				style("stroke-width", function(item) {
+					return Math.sqrt(item.value * 3);
+				});
 
 	var nodes = this.root.selectAll("circle.node").
 			data(this.data.nodes).
 			enter().
 			append("circle"). // TODO: customizable
-					attr("class", "node").
-					attr("r", 15).
-					style("fill", this.colorize).
+				attr("class", "node").
+				attr("r", 15).
+				style("fill", this.colorize).
 			on("click", $.proxy(this.onClick, this)).
 			call(this.graph.drag); // XXX: ?
 	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
@@ -97,11 +97,9 @@ prop = function() { // TODO: memoize
 	var args = arguments;
 	return function(obj) {
 		var res = obj;
-		var i, prop;
-		for(i = 0; i < args.length; i++) { // TODO: use `reduce`
-			prop = args[i];
+		$.each(args, function(i, prop) { // TODO: use `reduce`
 			res = res[prop];
-		}
+		});
 		return res;
 	};
 };
