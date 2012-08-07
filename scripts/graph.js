@@ -3,16 +3,23 @@
 
 var VISKOSITY = VISKOSITY || {};
 
-VISKOSITY.Graph = (function($) {
+VISKOSITY.graph = (function($) {
 
 "use strict";
 
 var prop;
 
+var graph = {
+	charge: -120,
+	linkDistance: 30,
+	colorize: (function(fn) { // TODO: rename
+		return function(item) { return fn(item.group); };
+	}(d3.scale.category20())) // XXX: bad default?
+};
 // `container` may be a DOM node, selector or jQuery object
 // `data` is the initial data set, an object with arrays for nodes and edges
 // `settings` is an optional set of key-value pairs
-function Graph(container, data, settings) {
+graph.init = function(container, data, settings) {
 	settings = settings || {};
 
 	// XXX: unnecessary jQuery dependency?
@@ -31,15 +38,8 @@ function Graph(container, data, settings) {
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
-}
-Graph.prototype = {
-	charge: -120,
-	linkDistance: 30,
-	colorize: (function(fn) { // TODO: rename
-		return function(item) { return fn(item.group); };
-	}(d3.scale.category20())) // XXX: bad default?
 };
-Graph.prototype.onTick = function() {
+graph.onTick = function() {
 	this.root.selectAll("line.link").
 			attr("x1", prop("source", "x")).
 			attr("y1", prop("source", "y")).
@@ -49,7 +49,7 @@ Graph.prototype.onTick = function() {
 			attr("cx", prop("x")).
 			attr("cy", prop("y"));
 };
-Graph.prototype.render = function() { // TODO: rename?
+graph.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").
 			data(this.data.edges).
 			enter().
@@ -83,7 +83,7 @@ prop = function() { // TODO: memoize
 	};
 };
 
-return Graph;
+return graph;
 
 }(jQuery));
 
@@ -110,4 +110,5 @@ var data = {
 	]
 };
 
-var graph = new VISKOSITY.Graph("#viz", data, { height: 500 });
+var graph = Object.create(VISKOSITY.graph);
+graph.init("#viz", data, { height: 500 });
