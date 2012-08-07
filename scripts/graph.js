@@ -7,7 +7,7 @@ VISKOSITY.graph = (function($) {
 
 "use strict";
 
-var prop;
+var prop, pusher;
 
 var graph = {
 	charge: -120,
@@ -17,8 +17,11 @@ var graph = {
 	}(d3.scale.category20())) // XXX: bad default?
 };
 // `container` may be a DOM node, selector or jQuery object
-// `data` is the initial data set, an object with arrays for nodes and edges
-// `settings` is an optional set of key-value pairs
+// `data` is the initial data set, an object with arrays for `nodes` and `edges`
+// `settings` is an optional set of key-value pairs for width and height
+// `settings.provider` is a function which is used to retrieve additional data -
+// this function is passed the respective node along with the entire data set
+// and expected to return an object with arrays for `nodes` and `edges`
 graph.init = function(container, data, settings) {
 	settings = settings || {};
 
@@ -28,6 +31,7 @@ graph.init = function(container, data, settings) {
 	this.height = settings.height || container.height();
 
 	this.data = data;
+	this.provider = settings.provider;
 	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
 	this.graph = d3.layout.force().
@@ -38,6 +42,19 @@ graph.init = function(container, data, settings) {
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
+};
+graph.onClick = function(item) {
+	if(!this.provider) {
+		return;
+	}
+	var newData = this.provider(item) || {};
+	var nodes = newData.nodes || [];
+	var edges = newData.edges || [];
+	if(nodes.length || edges.length) {
+		$.each(nodes, pusher(this.data.nodes));
+		$.each(edges, pusher(this.data.edges));
+		this.render();
+	}
 };
 graph.onTick = function() {
 	this.root.selectAll("line.link").
@@ -66,6 +83,7 @@ graph.render = function() { // TODO: rename?
 					attr("class", "node").
 					attr("r", 15).
 					style("fill", this.colorize).
+			on("click", $.proxy(this.onClick, this)).
 			call(this.graph.drag); // XXX: ?
 	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
 
@@ -85,6 +103,13 @@ prop = function() { // TODO: memoize
 			res = res[prop];
 		}
 		return res;
+	};
+};
+
+// convenience wrapper for jQuery#each callbacks
+pusher = function(arr) {
+	return function(i, item) {
+		arr.push(item);
 	};
 };
 

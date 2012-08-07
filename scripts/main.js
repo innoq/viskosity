@@ -31,5 +31,16 @@ var data = {
 	]
 };
 
+var provider = function(node) {
+	var node = { name: "robertg", group: 1 };
+
+	var edges = [
+		{ source: 0, target: 6, value: 2 },
+		{ source: 5, target: 6, value: 3 }
+	];
+
+	return { nodes: [node], edges: edges };
+};
+
 var graph = Object.create(VISKOSITY.graph);
-graph.init("#viz", data, { height: 500 });
+graph.init("#viz", data, { height: 500, provider: provider });
