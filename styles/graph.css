@@ -1,0 +1,14 @@
+.viz svg {
+	display: block;
+	margin: 0 auto;
+	border: 1px solid #AAA;
+}
+
+.node {
+	stroke-opacity: 0.25;
+}
+
+.edge {
+	stroke: #999;
+	stroke-opacity: 0.6;
+}
