@@ -18,40 +18,38 @@ provider.nodeMap = {}; // maps node IDs to the corresponding objects -- XXX: sin
 
 provider.transform = function(concept) {
 	var self = this;
-	var nodes = [this.concept2node(concept)];
-	$.each(concept.relations, function(i, concept) {
-		nodes.push(self.concept2node(concept));
+	var nodes = $.map(concept.relations, $.proxy(self.concept2node, self));
+	nodes.unshift(this.concept2node(concept));
+	nodes = $.map(nodes, function(node) { // filter existing nodes
+		if(self.nodeMap[node.id]) {
+			return null;
+		}
+		self.nodeMap[node.id] = node;
+		return node;
 	});
 	// edges must be processed separately to ensure nodes have been registered
 	var edges = this.concept2edges(concept);
 	$.each(concept.relations, function(i, concept) {
 		$.each(self.concept2edges(concept), pusher(edges));
-	});
+	}); // TODO: filter existing edges
 	return { nodes: nodes, edges: edges };
 };
 
 provider.concept2node = function(concept) {
 	var id = concept.origin;
-
-	var node = this.nodeMap[id];
-	if(node) {
-		return node;
-	}
-
-	node = {
+	var node = {
 		id: id,
 		uri: "data/" + id + ".json", // XXX: hard-coded
 		name: concept.labels[0].value,
 		group: 1 // XXX: hard-coded
 	};
-	this.nodeMap[id] = node;
 	return node;
 };
 
 provider.concept2edges = function(concept) {
 	var self = this;
 	var source = this.getNode(concept.origin);
-	return $.map(concept.relations, function(rel, i) {
+	return $.map(concept.relations, function(rel) {
 		var target = self.getNode(rel.origin);
 		return {
 			source: source,
