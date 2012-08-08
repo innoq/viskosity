@@ -98,6 +98,10 @@ graph.render = function() { // TODO: rename?
 			text(prop("name"));
 
 	this.graph.start();
+
+	this.root.selectAll("g.node circle").classed("extensible", function(item) {
+		return item.weight < item.relations;
+	});
 };
 
 return graph;
