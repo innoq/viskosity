@@ -1,13 +1,12 @@
 /*jslint vars: true, white: true */
-/*global jQuery, d3 */
-
-var VISKOSITY = VISKOSITY || {};
+/*global jQuery, d3, VISKOSITY */
 
 VISKOSITY.graph = (function($) {
 
 "use strict";
 
-var prop, pusher;
+var prop = VISKOSITY.getProp;
+var pusher = VISKOSITY.pusher;
 
 var graph = {
 	charge: -120,
@@ -69,7 +68,7 @@ graph.addData = function(data) {
 };
 graph.render = function() { // TODO: rename?
 	this.root.selectAll("line.link").
-			data(this.data.edges, this.identity).
+			data(this.data.edges).
 			enter().
 			append("line"). // TODO: customizable
 				attr("class", "edge link").
@@ -89,27 +88,6 @@ graph.render = function() { // TODO: rename?
 	nodes.append("title").text(prop("name")); // XXX: when is this executed; why not chained above?
 
 	this.graph.start();
-};
-
-// convenience wrapper
-// returns a property getter for arbitrary objects
-// if multiple arguments are supplied, the respective sub-property is returned
-prop = function() { // TODO: memoize
-	var args = arguments;
-	return function(obj) {
-		var res = obj;
-		$.each(args, function(i, prop) { // TODO: use `reduce`
-			res = res[prop];
-		});
-		return res;
-	};
-};
-
-// convenience wrapper for jQuery#each callbacks
-pusher = function(arr) {
-	return function(i, item) {
-		arr.push(item);
-	};
 };
 
 return graph;
