@@ -9,8 +9,9 @@ var prop = VISKOSITY.getProp;
 var pusher = VISKOSITY.pusher;
 
 var graph = {
-	charge: -150,
+	charge: -500,
 	linkDistance: 100,
+	linkStrength: 0.5,
 	colorize: (function(fn) { // TODO: rename
 		return function(item) { return fn(item.group); };
 	}(d3.scale.category20())), // XXX: bad default?
@@ -34,8 +35,10 @@ graph.init = function(container, data, settings) {
 	this.provider = settings.provider;
 	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
-	this.graph = d3.layout.force().
-			charge(this.charge).linkDistance(this.linkDistance). // TODO: (re)calculate dynamically to account for graph size
+	this.graph = d3.layout.force(). // TODO: (re)calculate settings dynamically to account for graph size
+			charge(this.charge).
+			linkDistance(this.linkDistance).
+			linkStrength(this.linkStrength).
 			size([this.width, this.height]);
 
 	this.graph.nodes(this.data.nodes).links(this.data.edges);
