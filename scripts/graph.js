@@ -7,6 +7,7 @@ VISKOSITY.graph = (function($) {
 
 var prop = VISKOSITY.getProp;
 var pusher = VISKOSITY.pusher;
+var scale = function(item) { return item.relations / 10 };
 
 var graph = {
 	charge: -500,
@@ -87,7 +88,9 @@ graph.render = function() { // TODO: rename?
 			call(this.graph.drag); // XXX: ?
 	nodes.append("circle"). // TODO: customizable appearance
 			attr("r", 15).
-			style("fill", this.colorize);
+			style("fill", this.colorize).
+			style("stroke-opacity", scale).
+			style("fill-opacity", scale);
 	nodes.append("text").
 			attr("text-anchor", "middle").
 			attr("dx", 0).
