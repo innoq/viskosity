@@ -19,7 +19,7 @@ var graph = {
 	linkDistance: 100,
 	linkStrength: 0.5,
 	colorize: (function(fn) { // TODO: rename
-		return function(item) { return fn(item.group); };
+		return function(item) { return fn(item.group || 0); };
 	}(d3.scale.category20())), // XXX: bad default?
 	identity: function(item) { return item.id; } // XXX: bad expectation?
 };
@@ -88,7 +88,8 @@ graph.render = function() { // TODO: rename?
 			append("line"). // TODO: customizable appearance
 				attr("class", "edge link").
 				style("stroke-width", function(item) {
-					return Math.sqrt(item.value * 3);
+					var value = item.value || 0;
+					return Math.sqrt(value * 3);
 				});
 
 	var nodes = this.root.selectAll(".node").
