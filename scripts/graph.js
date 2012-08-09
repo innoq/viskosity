@@ -69,7 +69,7 @@ graph.onTick = function() {
 			attr("y1", prop("source", "y")).
 			attr("x2", prop("target", "x")).
 			attr("y2", prop("target", "y"));
-	this.root.selectAll("g.node").attr("transform", function(item) {
+	this.root.selectAll(".node").attr("transform", function(item) {
 		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
 		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
 		return "translate(" + item.x + "," + item.y + ")";
@@ -92,7 +92,7 @@ graph.render = function() { // TODO: rename?
 					return Math.sqrt(item.value * 3);
 				});
 
-	var nodes = this.root.selectAll("g.node").
+	var nodes = this.root.selectAll(".node").
 			data(this.data.nodes, this.identity).
 			enter().
 			append("g").attr("class", "node").
@@ -111,7 +111,7 @@ graph.render = function() { // TODO: rename?
 
 	this.graph.start();
 
-	this.root.selectAll("g.node circle").classed("extensible", function(item) {
+	this.root.selectAll(".node circle").classed("extensible", function(item) {
 		item.size = parseInt(this.attributes.r.value, 10); // XXX: hack
 		return item.weight < item.relations;
 	});
