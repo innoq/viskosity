@@ -5,7 +5,8 @@
 }
 
 .node {
-	stroke-opacity: 0.25;
+	stroke: #AAA;
+	stroke-width: 1;
 	cursor: move;
 }
 
@@ -16,12 +17,9 @@
 
 .extensible {
 	stroke: #FFD700;
-	stroke-width: 2;
-	stroke-opacity: 1 !important; /* XXX: necessary to override inline styles */
 	cursor: pointer;
 }
 
 .active {
 	fill: #FFD700 !important; /* XXX: necessary to override inline styles */
-	fill-opacity: 1 !important; /* XXX: necessary to override inline styles */
 }

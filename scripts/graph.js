@@ -7,7 +7,6 @@ VISKOSITY.graph = (function($) {
 
 var prop = VISKOSITY.getProp;
 var pusher = VISKOSITY.pusher;
-var scale = function(item) { return item.relations / 10; };
 var setContext = function(fn, ctx) {
 	return function() {
 		var context = $.extend({ context: this }, ctx);
@@ -56,7 +55,7 @@ graph.init = function(container, data, settings) {
 graph.onClick = function(item) {
 	var self = this.graph;
 	self.root.selectAll(".active").classed("active", false);
-	d3.select(this.context).select("circle").classed("active", true);
+	d3.select(this.context).classed("active", true);
 	if(!self.provider) {
 		return;
 	}
@@ -95,26 +94,27 @@ graph.render = function() { // TODO: rename?
 	var nodes = this.root.selectAll(".node").
 			data(this.data.nodes, this.identity).
 			enter().
-			append("g").attr("class", "node").
+			append("path").attr("class", "node").
 			on("click", setContext(this.onClick, { graph: this })).
 			call(this.graph.drag); // XXX: ?
-	nodes.append("circle"). // TODO: customizable appearance
-			attr("r", 15).
-			style("fill", this.colorize).
-			style("stroke-opacity", scale).
-			style("fill-opacity", scale);
-	nodes.append("text").
-			attr("text-anchor", "middle").
-			attr("dx", 0).
-			attr("dy", "0.35em").
-			text(prop("name"));
+	nodes.attr("d", this.shape()).
+			style("fill", this.colorize);
+	nodes.append("title").text(prop("name"));
 
 	this.graph.start();
 
-	this.root.selectAll(".node circle").classed("extensible", function(item) {
-		item.size = parseInt(this.attributes.r.value, 10); // XXX: hack
+	this.root.selectAll(".node").classed("extensible", function(item) {
 		return item.weight < item.relations;
 	});
+};
+graph.shape = function() { // TODO: rename
+	return d3.svg.symbol().
+			type(function(item) { return item.type || "circle"; }).
+			size(function(item) {
+				var size = (item.relations || 1) * 10;
+				item.size = Math.sqrt(size); // shape size is in px²
+				return size;
+			});
 };
 
 return graph;
