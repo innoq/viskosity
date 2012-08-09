@@ -7,7 +7,7 @@ VISKOSITY.graph = (function($) {
 
 var prop = VISKOSITY.getProp;
 var pusher = VISKOSITY.pusher;
-var scale = function(item) { return item.relations / 10 };
+var scale = function(item) { return item.relations / 10; };
 
 var graph = {
 	charge: -500,
@@ -54,12 +54,15 @@ graph.onClick = function(item) {
 	this.provider(item, this.data, $.proxy(this.addData, this));
 };
 graph.onTick = function() {
+	var self = this;
 	this.root.selectAll("line.link").
 			attr("x1", prop("source", "x")).
 			attr("y1", prop("source", "y")).
 			attr("x2", prop("target", "x")).
 			attr("y2", prop("target", "y"));
 	this.root.selectAll("g.node").attr("transform", function(item) {
+		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
+		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
 		return "translate(" + item.x + "," + item.y + ")";
 	});
 };
@@ -100,6 +103,7 @@ graph.render = function() { // TODO: rename?
 	this.graph.start();
 
 	this.root.selectAll("g.node circle").classed("extensible", function(item) {
+		item.size = parseInt(this.attributes.r.value, 10); // XXX: hack
 		return item.weight < item.relations;
 	});
 };
