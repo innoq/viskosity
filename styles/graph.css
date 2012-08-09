@@ -20,3 +20,8 @@
 	stroke-opacity: 1 !important; /* XXX: necessary to override inline styles */
 	cursor: pointer;
 }
+
+.active {
+	fill: #FFD700 !important; /* XXX: necessary to override inline styles */
+	fill-opacity: 1 !important; /* XXX: necessary to override inline styles */
+}

@@ -8,6 +8,12 @@ VISKOSITY.graph = (function($) {
 var prop = VISKOSITY.getProp;
 var pusher = VISKOSITY.pusher;
 var scale = function(item) { return item.relations / 10; };
+var setContext = function(fn, ctx) {
+	return function() {
+		var context = $.extend({ context: this }, ctx);
+		fn.apply(context, arguments);
+	};
+};
 
 var graph = {
 	charge: -500,
@@ -48,10 +54,13 @@ graph.init = function(container, data, settings) {
 	this.graph.on("tick", $.proxy(this.onTick, this));
 };
 graph.onClick = function(item) {
-	if(!this.provider) {
+	var self = this.graph;
+	self.root.selectAll(".active").classed("active", false);
+	d3.select(this.context).select("circle").classed("active", true);
+	if(!self.provider) {
 		return;
 	}
-	this.provider(item, this.data, $.proxy(this.addData, this));
+	self.provider(item, self.data, $.proxy(self.addData, self));
 };
 graph.onTick = function() {
 	var self = this;
@@ -87,7 +96,7 @@ graph.render = function() { // TODO: rename?
 			data(this.data.nodes, this.identity).
 			enter().
 			append("g").attr("class", "node").
-			on("click", $.proxy(this.onClick, this)).
+			on("click", setContext(this.onClick, { graph: this })).
 			call(this.graph.drag); // XXX: ?
 	nodes.append("circle"). // TODO: customizable appearance
 			attr("r", 15).
