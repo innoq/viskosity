@@ -1,6 +1,17 @@
 /*jslint vars: true, white: true */
 /*global jQuery */
 
+if(!Object.create) {
+	Object.create = function(obj) {
+		if(arguments.length > 1) {
+			throw new Error("properties parameter is not supported");
+		}
+		var F = function() {};
+		F.prototype = obj;
+		return new F();
+	};
+}
+
 var VISKOSITY = VISKOSITY || {};
 
 (function($) {
