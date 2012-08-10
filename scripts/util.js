@@ -1,6 +1,12 @@
 /*jslint vars: true, white: true */
 /*global jQuery */
 
+var VISKOSITY = VISKOSITY || {};
+
+(function($) {
+
+"use strict";
+
 if(!Object.create) {
 	Object.create = function(obj) {
 		if(arguments.length > 1) {
@@ -11,12 +17,6 @@ if(!Object.create) {
 		return new F();
 	};
 }
-
-var VISKOSITY = VISKOSITY || {};
-
-(function($) {
-
-"use strict";
 
 VISKOSITY.cappedStack = function(maxItems) {
 	var arr = [];
