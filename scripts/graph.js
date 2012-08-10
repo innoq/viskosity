@@ -102,7 +102,7 @@ graph.shape = function() { // TODO: rename
 	return d3.svg.symbol().
 			type(function(item) { return item.type || "circle"; }).
 			size(function(item) {
-				var size = (item.relations || 1) * 10;
+				var size = (item.relations || 1) * 10 + 100;
 				item.size = Math.sqrt(size); // shape size is in px²
 				return size;
 			});
@@ -110,7 +110,7 @@ graph.shape = function() { // TODO: rename
 
 // adapted from http://mbostock.github.com/d3/talk/20110921/collision.html
 collide = function(node) {
-	var s = node.size + 16,
+	var s = node.size + 16, // TODO: use `getBBox` for actual dimensions
 		nx1 = node.x - s,
 		nx2 = node.x + s,
 		ny1 = node.y - s,
