@@ -4,7 +4,7 @@
 	border: 1px solid #AAA;
 }
 
-.node {
+.node path {
 	stroke: #AAA;
 	stroke-width: 1;
 	cursor: move;
@@ -15,11 +15,11 @@
 	stroke-opacity: 0.25;
 }
 
-.extensible {
+.extensible path {
 	stroke: #FFD700;
 	cursor: pointer;
 }
 
-.active {
+.active path {
 	fill: #FFD700 !important; /* XXX: necessary to override inline styles */
 }
