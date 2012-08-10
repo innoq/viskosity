@@ -6,7 +6,8 @@ VISKOSITY.graph = (function($) {
 "use strict";
 
 var prop = VISKOSITY.getProp,
-	setContext = VISKOSITY.setContext;
+	setContext = VISKOSITY.setContext,
+	collide;
 
 var graph = {
 	charge: -500,
@@ -43,12 +44,23 @@ graph.init = function(container, data, settings) {
 };
 graph.onTick = function() {
 	var self = this;
+
+	// collision detection
+	var nodes = this.graph.nodes();
+	var q = d3.geom.quadtree(nodes);
+	var i = 0;
+	var l = nodes.length;
+	while(++i < l) {
+		q.visit(collide(nodes[i]));
+	}
+
 	this.root.selectAll("line.link").
 			attr("x1", prop("source", "x")).
 			attr("y1", prop("source", "y")).
 			attr("x2", prop("target", "x")).
 			attr("y2", prop("target", "y"));
 	this.root.selectAll("g.node").attr("transform", function(item) {
+		// bounding box
 		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
 		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
 		return "translate(" + item.x + "," + item.y + ")";
@@ -94,6 +106,31 @@ graph.shape = function() { // TODO: rename
 				item.size = Math.sqrt(size); // shape size is in px²
 				return size;
 			});
+};
+
+// adapted from http://mbostock.github.com/d3/talk/20110921/collision.html
+collide = function(node) {
+	var s = node.size + 16,
+		nx1 = node.x - s,
+		nx2 = node.x + s,
+		ny1 = node.y - s,
+		ny2 = node.y + s;
+	return function(quad, x1, y1, x2, y2) {
+		if(quad.point && (quad.point !== node)) {
+			var x = node.x - quad.point.x,
+				y = node.y - quad.point.y,
+				l = Math.sqrt(x * x + y * y),
+				s = node.size + quad.point.size;
+			if(l < s) {
+				l = (l - s) / l * 0.5;
+				node.x -= x *= l;
+				node.y -= y *= l;
+				quad.point.x += x;
+				quad.point.y += y;
+			}
+		}
+		return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+	};
 };
 
 return graph;
