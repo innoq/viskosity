@@ -5,8 +5,9 @@ VISKOSITY.graph = (function($) {
 
 "use strict";
 
-var prop = VISKOSITY.getProp;
-var pusher = VISKOSITY.pusher;
+var prop = VISKOSITY.getProp,
+	pusher = VISKOSITY.pusher,
+	evict = VISKOSITY.evict;
 var setContext = function(fn, ctx) {
 	return function() {
 		var context = $.extend({ context: this }, ctx);
@@ -46,6 +47,7 @@ graph.init = function(container, data, settings) {
 			linkDistance(this.linkDistance).
 			linkStrength(this.linkStrength).
 			size([this.width, this.height]);
+	this.history = VISKOSITY.cappedStack(1);
 
 	this.graph.nodes(this.data.nodes).links(this.data.edges);
 	this.render();
@@ -60,6 +62,16 @@ graph.onClick = function(item) {
 		return;
 	}
 	self.provider(item, self.data, $.proxy(self.addData, self));
+};
+graph.undo = function() {
+	var data = this.history.pop();
+	if(!data) {
+		return;
+	}
+	evict(data.nodes, this.data.nodes);
+	evict(data.edges, this.data.edges);
+	this.render();
+	this.toggleHighlight();
 };
 graph.onTick = function() {
 	var self = this;
@@ -86,11 +98,13 @@ graph.addData = function(data) {
 		$.each(data.edges, pusher(this.data.edges));
 		this.render();
 	}
+	this.history.push(data);
 };
 graph.render = function() { // TODO: rename?
-	this.root.selectAll("line.link").
-			data(this.data.edges).
-			enter().
+	var edges = this.root.selectAll("line.link").
+			data(this.data.edges);
+	edges.exit().remove(); // TODO: animate
+	edges.enter().
 			append("line"). // TODO: customizable appearance
 				attr("class", "edge link").
 				style("stroke-width", function(item) {
@@ -99,15 +113,16 @@ graph.render = function() { // TODO: rename?
 				});
 
 	var nodes = this.root.selectAll("g.node").
-			data(this.data.nodes, this.identity).
-			enter().
+			data(this.data.nodes, this.identity);
+	nodes.exit().remove(); // TODO: animate
+	var newNodes = nodes.enter().
 			append("g").attr("class", "node").
 			on("click", setContext(this.onClick, { graph: this })).
 			call(this.graph.drag); // XXX: ?
-	nodes.append("path").
+	newNodes.append("path").
 			attr("d", this.shape()).
 			style("fill", this.colorize);
-	nodes.append("text").text(prop("name"));
+	newNodes.append("text").text(prop("name"));
 
 	this.graph.start();
 

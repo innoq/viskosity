@@ -7,6 +7,19 @@ var VISKOSITY = VISKOSITY || {};
 
 "use strict";
 
+VISKOSITY.cappedStack = function(maxItems) {
+	var arr = [];
+	return {
+		push: function(item) {
+			arr.push(item);
+			if(arr.length > maxItems) {
+				arr.shift();
+			}
+		},
+		pop: function() { return arr.pop(); }
+	};
+};
+
 // convenience wrapper
 // returns a property getter for arbitrary objects
 // if multiple arguments are supplied, the respective sub-property is returned
@@ -27,6 +40,16 @@ VISKOSITY.pusher = function(arr) {
 	return function(i, item) {
 		arr.push(item);
 	};
+};
+
+// remove elements from array
+VISKOSITY.evict = function(items, arr) { // XXX: inefficient!?
+	var i;
+	for(i = arr.length - 1; i >= 0; i--) {
+		if($.inArray(arr[i], items) !== -1) {
+			arr.splice(i, 1);
+		}
+	}
 };
 
 }(jQuery));
