@@ -5,9 +5,7 @@ VISKOSITY.graph = (function($) {
 
 "use strict";
 
-var prop = VISKOSITY.getProp,
-	pusher = VISKOSITY.pusher,
-	evict = VISKOSITY.evict;
+var prop = VISKOSITY.getProp;
 var setContext = function(fn, ctx) {
 	return function() {
 		var context = $.extend({ context: this }, ctx);
@@ -27,9 +25,6 @@ var graph = {
 // `container` may be a DOM node, selector or jQuery object
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
 // `settings` is an optional set of key-value pairs for width and height
-// `settings.provider` is a function which is used to retrieve additional data -
-// it is passed the respective node along with the full data set and a callback,
-// to which it should pass an object with arrays for `nodes` and `edges`
 graph.init = function(container, data, settings) {
 	settings = settings || {};
 
@@ -38,7 +33,6 @@ graph.init = function(container, data, settings) {
 	this.width = settings.width || container.width();
 	this.height = settings.height || container.height();
 
-	this.provider = settings.provider;
 	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
 	this.graph = d3.layout.force(). // TODO: (re)calculate settings dynamically to account for graph size
@@ -46,31 +40,11 @@ graph.init = function(container, data, settings) {
 			linkDistance(this.linkDistance).
 			linkStrength(this.linkStrength).
 			size([this.width, this.height]);
-	this.history = VISKOSITY.cappedStack(1);
 
 	this.graph.nodes(data.nodes).links(data.edges);
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
-	this.root.on("mousedown", $.proxy(this.toggleHighlight, this));
-};
-graph.onClick = function(item) {
-	var self = this.graph;
-	self.toggleHighlight(this.context);
-	if(!self.provider) {
-		return;
-	}
-	self.provider(item, self.data, $.proxy(self.addData, self));
-};
-graph.undo = function() {
-	var data = this.history.pop();
-	if(!data) {
-		return;
-	}
-	evict(data.nodes, this.graph.nodes());
-	evict(data.edges, this.graph.links());
-	this.render();
-	this.toggleHighlight();
 };
 graph.onTick = function() {
 	var self = this;
@@ -84,20 +58,6 @@ graph.onTick = function() {
 		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
 		return "translate(" + item.x + "," + item.y + ")";
 	});
-};
-graph.toggleHighlight = function(el) { // TODO: rename
-	this.root.selectAll(".active").classed("active", false);
-	if(el) {
-		d3.select(el).classed("active", true);
-	}
-};
-graph.addData = function(data) {
-	if(data.nodes.length || data.edges.length) {
-		$.each(data.nodes, pusher(this.graph.nodes()));
-		$.each(data.edges, pusher(this.graph.links()));
-		this.render();
-	}
-	this.history.push(data);
 };
 graph.render = function() { // TODO: rename?
 	var edges = this.root.selectAll("line.link").
@@ -116,12 +76,14 @@ graph.render = function() { // TODO: rename?
 	nodes.exit().remove(); // TODO: animate
 	var newNodes = nodes.enter().
 			append("g").attr("class", "node").
-			on("click", setContext(this.onClick, { graph: this })).
 			call(this.graph.drag); // XXX: unnecessary!?
 	newNodes.append("path").
 			attr("d", this.shape()).
 			style("fill", this.colorize);
 	newNodes.append("text").text(prop("name"));
+	if(this.onClick) {
+		newNodes.on("click", setContext(this.onClick, { graph: this }));
+	}
 
 	this.graph.start();
 
