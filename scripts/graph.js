@@ -51,11 +51,11 @@ graph.init = function(container, data, settings) {
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
+	this.root.on("mousedown", $.proxy(this.toggleHighlight, this));
 };
 graph.onClick = function(item) {
 	var self = this.graph;
-	self.root.selectAll(".active").classed("active", false);
-	d3.select(this.context).classed("active", true);
+	self.toggleHighlight(this.context);
 	if(!self.provider) {
 		return;
 	}
@@ -73,6 +73,12 @@ graph.onTick = function() {
 		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
 		return "translate(" + item.x + "," + item.y + ")";
 	});
+};
+graph.toggleHighlight = function(el) { // TODO: rename
+	this.root.selectAll(".active").classed("active", false);
+	if(el) {
+		d3.select(el).classed("active", true);
+	}
 };
 graph.addData = function(data) {
 	if(data.nodes.length || data.edges.length) {
