@@ -38,7 +38,6 @@ graph.init = function(container, data, settings) {
 	this.width = settings.width || container.width();
 	this.height = settings.height || container.height();
 
-	this.data = data;
 	this.provider = settings.provider;
 	this.root = d3.select(container[0]).append("svg").
 			attr("width", this.width).attr("height", this.height);
@@ -49,7 +48,7 @@ graph.init = function(container, data, settings) {
 			size([this.width, this.height]);
 	this.history = VISKOSITY.cappedStack(1);
 
-	this.graph.nodes(this.data.nodes).links(this.data.edges);
+	this.graph.nodes(data.nodes).links(data.edges);
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
@@ -68,8 +67,8 @@ graph.undo = function() {
 	if(!data) {
 		return;
 	}
-	evict(data.nodes, this.data.nodes);
-	evict(data.edges, this.data.edges);
+	evict(data.nodes, this.graph.nodes());
+	evict(data.edges, this.graph.links());
 	this.render();
 	this.toggleHighlight();
 };
@@ -94,15 +93,15 @@ graph.toggleHighlight = function(el) { // TODO: rename
 };
 graph.addData = function(data) {
 	if(data.nodes.length || data.edges.length) {
-		$.each(data.nodes, pusher(this.data.nodes));
-		$.each(data.edges, pusher(this.data.edges));
+		$.each(data.nodes, pusher(this.graph.nodes()));
+		$.each(data.edges, pusher(this.graph.links()));
 		this.render();
 	}
 	this.history.push(data);
 };
 graph.render = function() { // TODO: rename?
 	var edges = this.root.selectAll("line.link").
-			data(this.data.edges);
+			data(this.graph.links());
 	edges.exit().remove(); // TODO: animate
 	edges.enter().
 			append("line"). // TODO: customizable appearance
@@ -113,12 +112,12 @@ graph.render = function() { // TODO: rename?
 				});
 
 	var nodes = this.root.selectAll("g.node").
-			data(this.data.nodes, this.identity);
+			data(this.graph.nodes(), this.identity);
 	nodes.exit().remove(); // TODO: animate
 	var newNodes = nodes.enter().
 			append("g").attr("class", "node").
 			on("click", setContext(this.onClick, { graph: this })).
-			call(this.graph.drag); // XXX: ?
+			call(this.graph.drag); // XXX: unnecessary!?
 	newNodes.append("path").
 			attr("d", this.shape()).
 			style("fill", this.colorize);
