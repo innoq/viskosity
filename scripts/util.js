@@ -3,7 +3,7 @@
 
 var VISKOSITY = VISKOSITY || {};
 
-(function($) {
+(function($, ns) {
 
 "use strict";
 
@@ -18,7 +18,7 @@ if(!Object.create) {
 	};
 }
 
-VISKOSITY.cappedStack = function(maxItems) {
+ns.cappedStack = function(maxItems) {
 	var arr = [];
 	return {
 		push: function(item) {
@@ -34,7 +34,7 @@ VISKOSITY.cappedStack = function(maxItems) {
 // convenience wrapper
 // returns a property getter for arbitrary objects
 // if multiple arguments are supplied, the respective sub-property is returned
-VISKOSITY.getProp = function() { // TODO: memoize
+ns.getProp = function() { // TODO: memoize
 	var args = arguments;
 	return function(obj) {
 		var res = obj;
@@ -47,14 +47,14 @@ VISKOSITY.getProp = function() { // TODO: memoize
 
 // convenience wrapper for jQuery#each callbacks
 // returns a function which appends the given item to the specified array
-VISKOSITY.pusher = function(arr) {
+ns.pusher = function(arr) {
 	return function(i, item) {
 		arr.push(item);
 	};
 };
 
 // remove elements from array
-VISKOSITY.evict = function(items, arr) { // XXX: inefficient!?
+ns.evict = function(items, arr) { // XXX: inefficient!?
 	var i;
 	for(i = arr.length - 1; i >= 0; i--) {
 		if($.inArray(arr[i], items) !== -1) {
@@ -63,4 +63,4 @@ VISKOSITY.evict = function(items, arr) { // XXX: inefficient!?
 	}
 };
 
-}(jQuery));
+}(jQuery, VISKOSITY));
