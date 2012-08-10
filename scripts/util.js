@@ -31,6 +31,13 @@ ns.cappedStack = function(maxItems) {
 	};
 };
 
+ns.setContext = function(fn, ctx) {
+	return function() {
+		var context = $.extend({ context: this }, ctx);
+		fn.apply(context, arguments);
+	};
+};
+
 // convenience wrapper
 // returns a property getter for arbitrary objects
 // if multiple arguments are supplied, the respective sub-property is returned

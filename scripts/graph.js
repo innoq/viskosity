@@ -5,13 +5,8 @@ VISKOSITY.graph = (function($) {
 
 "use strict";
 
-var prop = VISKOSITY.getProp;
-var setContext = function(fn, ctx) {
-	return function() {
-		var context = $.extend({ context: this }, ctx);
-		fn.apply(context, arguments);
-	};
-};
+var prop = VISKOSITY.getProp,
+	setContext = VISKOSITY.setContext;
 
 var graph = {
 	charge: -500,
