@@ -1,7 +1,7 @@
 /*jslint vars: true, unparam: true, white: true */
 /*global jQuery, VISKOSITY */
 
-VISKOSITY.skosProvider = (function($) {
+VISKOSITY.iQvocProvider = (function($) {
 
 "use strict";
 
