@@ -90,7 +90,7 @@ function parseRDF(doc) {
 	var namespaces = determineNamespaces(doc.documentElement);
 	var base = delete namespaces["default"];
 
-	var db = $.rdf({ base: base, namespaces: namespaces }); // TODO: s/db/store/
+	var db = $.rdf({ base: base, namespaces: namespaces });
 	db.load(doc);
 	return db;
 }
@@ -117,7 +117,8 @@ function resourceID(resource) {
 	return resource.toString().replace(/^<(.*)>$/, "$1");
 }
 
-// workaround: rdfQuery mistakenly includes literal quotation marks -- TODO: create MTC and bug report
+// workaround: rdfQuery mistakenly includes literal quotation marks
+// cf. http://code.google.com/p/rdfquery/issues/detail?id=39
 function fixLiteral(str) {
 	return str.replace(/^"(.*)"$/, "$1");
 }
