@@ -42,7 +42,7 @@ graph.init = function(container, data, settings) {
 
 	this.graph.on("tick", $.proxy(this.onTick, this));
 };
-graph.onTick = function() {
+graph.onTick = function(ev) {
 	var self = this;
 
 	// collision detection

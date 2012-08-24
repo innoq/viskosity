@@ -1,8 +1,10 @@
 /*jslint vars: true, white: true */
-/*global jQuery, VISKOSITY */
+/*global jQuery, d3, VISKOSITY */
 
 // interactive graph
 VISKOSITY.igraph = (function($) {
+
+"use strict";
 
 var base = VISKOSITY.graph,
 	pusher = VISKOSITY.pusher,
