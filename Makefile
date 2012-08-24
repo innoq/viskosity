@@ -8,3 +8,5 @@ dependencies:
 		"http://ajax.googleapis.com/ajax/libs/jquery/$(jquery_version)/jquery.min.js"
 	curl -o "lib/d3.js" "http://d3js.org/d3.v2.min.js"
 	curl -o "lib/d3_pack.css" "http://mbostock.github.com/d3/ex/pack.css"
+	curl -o "lib/rdfquery-core.js" \
+		"http://rdfquery.googlecode.com/files/jquery.rdfquery.core.min-1.0.js"
