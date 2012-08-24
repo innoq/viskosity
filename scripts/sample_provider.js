@@ -49,8 +49,13 @@ return function(node, data, callback) {
 	var edges = [];
 	var edgeCount = rand(nodes.length);
 	for(i = 0; i < edgeCount; i++) {
-		var sourceIndex = rand(nodes.length) - 1;
-		var source = nodes[sourceIndex];
+		var source;
+		if(node.id) { // non-dummy node
+			source = node;
+		} else {
+			var sourceIndex = rand(nodes.length) - 1;
+			source = nodes[sourceIndex];
+		}
 
 		var targetIndex = rand(nodes.length) - 1;
 		var target = nodes[targetIndex];
