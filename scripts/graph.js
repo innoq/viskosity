@@ -45,6 +45,23 @@ graph.init = function(container, data, settings) {
 graph.onTick = function() {
 	var self = this;
 
+	this.root.selectAll("line.link").
+			attr("x1", prop("source", "x")).
+			attr("y1", prop("source", "y")).
+			attr("x2", prop("target", "x")).
+			attr("y2", prop("target", "y"));
+	this.root.selectAll("g.node").attr("transform", function(item) {
+		// calculate actual size -- XXX: does not belong here?
+		var bbox = this.getBBox();
+		var width = bbox.width;
+		var height = bbox.height;
+		item.size = { width: width, height: height };
+		// bounding box
+		item.x = Math.max(width, Math.min(self.width - width, item.x));
+		item.y = Math.max(height, Math.min(self.height - height, item.y));
+		return "translate(" + item.x + "," + item.y + ")";
+	});
+
 	// collision detection
 	var nodes = this.graph.nodes();
 	var q = d3.geom.quadtree(nodes);
@@ -53,18 +70,6 @@ graph.onTick = function() {
 	while(++i < l) {
 		q.visit(collide(nodes[i]));
 	}
-
-	this.root.selectAll("line.link").
-			attr("x1", prop("source", "x")).
-			attr("y1", prop("source", "y")).
-			attr("x2", prop("target", "x")).
-			attr("y2", prop("target", "y"));
-	this.root.selectAll("g.node").attr("transform", function(item) {
-		// bounding box
-		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
-		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
-		return "translate(" + item.x + "," + item.y + ")";
-	});
 };
 graph.render = function() { // TODO: rename?
 	var edges = this.root.selectAll("line.link").
@@ -101,30 +106,31 @@ graph.render = function() { // TODO: rename?
 graph.shape = function() { // TODO: rename
 	return d3.svg.symbol().
 			type(function(item) { return item.type || "circle"; }).
-			size(function(item) {
-				var size = (item.relations || 1) * 10 + 100;
-				item.size = Math.sqrt(size); // shape size is in px²
-				return size;
+			size(function(item) { // in px²
+				return (item.relations || 1) * 10 + 100;
 			});
 };
 
 // adapted from http://mbostock.github.com/d3/talk/20110921/collision.html
 collide = function(node) {
-	var s = node.size + 16, // TODO: use `getBBox` for actual dimensions
-		nx1 = node.x - s,
-		nx2 = node.x + s,
-		ny1 = node.y - s,
-		ny2 = node.y + s;
+	var width = node.size.width / 2,
+		height = node.size.height / 2,
+		nx1 = node.x - width,
+		nx2 = node.x + width,
+		ny1 = node.y - height,
+		ny2 = node.y + height;
 	return function(quad, x1, y1, x2, y2) {
 		if(quad.point && (quad.point !== node)) {
 			var x = node.x - quad.point.x,
 				y = node.y - quad.point.y,
 				l = Math.sqrt(x * x + y * y),
-				s = node.size + quad.point.size;
-			if(l < s) {
-				l = (l - s) / l * 0.5;
-				node.x -= x *= l;
-				node.y -= y *= l;
+				width = (node.size.width + quad.point.size.width) / 2,
+				height = (node.size.height + quad.point.size.height) / 2;
+			if(l < Math.min(width, height)) {
+				var lw = (l - width) / l * 0.5;
+				var lh = (l - height) / l * 0.5;
+				node.x -= x *= lw;
+				node.y -= y *= lh;
 				quad.point.x += x;
 				quad.point.y += y;
 			}
