@@ -11,7 +11,7 @@ VISKOSITY.sampleProvider = (function() {
 function rand(limit) {
 	var num = Math.floor(Math.random() * limit);
 	return num + 1;
-};
+}
 
 function generateNode() {
 	var id = rand(1000).toString();
@@ -38,15 +38,17 @@ function generateEdge(source, target, value) {
 // `data` is an object with members `nodes` and `edges`, representing the current data set
 // `callback` expects a similar object with new nodes and edges
 return function(node, data, callback) {
+	var i;
+
 	var nodes = [];
-	for(var i = 0; i < 10; i++) {
-		var node = generateNode();
-		nodes.push(node);
+	for(i = 0; i < 10; i++) {
+		var newNode = generateNode();
+		nodes.push(newNode);
 	}
 
 	var edges = [];
 	var edgeCount = rand(nodes.length);
-	for(var i = 0; i < edgeCount; i++) {
+	for(i = 0; i < edgeCount; i++) {
 		var sourceIndex = rand(nodes.length) - 1;
 		var source = nodes[sourceIndex];
 
@@ -62,7 +64,7 @@ return function(node, data, callback) {
 	var newData = {
 		nodes: nodes,
 		edges: edges
-	}
+	};
 	callback(newData);
 };
 
