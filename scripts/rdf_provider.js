@@ -8,7 +8,8 @@ VISKOSITY.rdfProvider = (function($) { // TODO: rename to SKOS provider
 var prop = VISKOSITY.getProp,
 	drop = VISKOSITY.dropArgs;
 
-var nodeMap = {}; // maps node IDs to the corresponding objects -- XXX: singleton
+var store = Object.create(VISKOSITY.graphStore); // XXX: singleton
+store.init();
 
 // mapping of relation types to connection weightings
 var relationTypes = { // TODO: review values -- XXX: SKOS URLs must also take into account http://www.w3.org/2009/08/skos-reference/skos.html#
@@ -36,7 +37,7 @@ var provider = function(node, data, callback) {
 			});
 
 			var node = concept2node(concept, labels[0], relations.length); // XXX: label handling hacky; should select by locale
-			nodeMap[node.id] = node;
+			store.addNode(node);
 
 			return node;
 		});
@@ -47,10 +48,10 @@ var provider = function(node, data, callback) {
 				var resources = [data.source, data.target];
 				var _nodes = $.map(resources, function(resource, i) {
 					var uri = resourceID(resource);
-					var node = nodeMap[uri];
+					var node = store.getNode(uri);
 					if(!node) { // XXX: breaks encapsulation
 						node = { id: uri, uri: uri }; // XXX: redundant
-						nodeMap[uri] = node;
+						store.addNode(node);
 						nodes.push(node);
 					}
 					return node;
@@ -62,6 +63,7 @@ var provider = function(node, data, callback) {
 					value: value
 				};
 
+				store.addEdge(edge);
 				return edge;
 			});
 			return Array.prototype.slice.call(edges, 0); // ensures flattening
