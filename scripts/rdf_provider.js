@@ -41,17 +41,30 @@ var provider = function(node, data, callback) {
 			return node;
 		});
 
-		var edges = [];
-		$.map(relationTypes, function(value, type) {
+		var edges = $.map(relationTypes, function(value, type) {
 			var query = "?source <" + type + "> ?target";
-			db.where(query).map(function(i, data) {
-				edges.push({
-					// TODO: reference previously created node objects, not RDF resources
-					source: nodeMap[data.source.toString()],
-					target: nodeMap[data.target.toString()],
-					value: value
+			var edges = db.where(query).map(function(i, data) {
+				var resources = [data.source, data.target];
+				var _nodes = $.map(resources, function(resource, i) {
+					var uri = resourceID(resource);
+					var node = nodeMap[uri];
+					if(!node) { // XXX: breaks encapsulation
+						node = { id: uri, uri: uri }; // XXX: redundant
+						nodeMap[uri] = node;
+						nodes.push(node);
+					}
+					return node;
 				});
+
+				var edge = {
+					source: _nodes[0],
+					target: _nodes[1],
+					value: value
+				};
+
+				return edge;
 			});
+			return Array.prototype.slice.call(edges, 0); // ensures flattening
 		});
 		callback({ nodes: nodes, edges: edges });
 	});
@@ -59,7 +72,7 @@ var provider = function(node, data, callback) {
 
 function concept2node(resource, label, relCount) {
 	var node = {
-		id: resource.toString(),
+		id: resourceID(resource),
 		uri: resource.value.toString()
 	};
 	if(label) {
@@ -96,6 +109,10 @@ function determineNamespaces(node) {
 		}
 	}
 	return namespaces;
+}
+
+function resourceID(resource) {
+	return resource.toString().replace(/^<(.*)>$/, "$1");
 }
 
 // workaround: rdfQuery mistakenly includes literal quotation marks -- TODO: create MTC and bug report
