@@ -7,6 +7,7 @@ var VISKOSITY = VISKOSITY || {};
 
 "use strict";
 
+// polyfills
 if(!Object.create) {
 	Object.create = function(obj) {
 		if(arguments.length > 1) {
@@ -15,6 +16,21 @@ if(!Object.create) {
 		var F = function() {};
 		F.prototype = obj;
 		return new F();
+	};
+}
+if(!Object.keys) {
+	Object.keys = function(obj) {
+		if(obj !== Object(obj)) {
+			throw new TypeError("Object.keys called on non-object");
+		}
+		var prop;
+		var keys = [];
+		for(prop in obj) {
+			if(Object.prototype.hasOwnProperty.call(obj, prop)) {
+				keys.push(prop);
+			}
+		}
+		return keys;
 	};
 }
 
@@ -68,6 +84,15 @@ ns.evict = function(items, arr) { // XXX: inefficient!?
 			arr.splice(i, 1);
 		}
 	}
+};
+
+// invoke `fn` without the first `count` arguments
+// `count` defaults to 1
+ns.dropArgs = function(fn, count) {
+	return function() {
+		var args = Array.prototype.slice.call(arguments, count || 1);
+		return fn.apply(this, args);
+	};
 };
 
 }(jQuery, VISKOSITY));
