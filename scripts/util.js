@@ -20,9 +20,6 @@ if(!Object.create) {
 }
 if(!Object.keys) {
 	Object.keys = function(obj) {
-		if(obj !== Object(obj)) {
-			throw new TypeError("Object.keys called on non-object");
-		}
 		var prop;
 		var keys = [];
 		for(prop in obj) {
@@ -31,6 +28,11 @@ if(!Object.keys) {
 			}
 		}
 		return keys;
+	};
+}
+if(!Array.prototype.indexOf) {
+	Array.prototype.indexOf = function(searchElement, fromIndex) {
+		return $.inArray(searchElement, this, fromIndex);
 	};
 }
 
@@ -76,14 +78,17 @@ ns.pusher = function(arr) {
 	};
 };
 
-// remove elements from array
-ns.evict = function(items, arr) { // XXX: inefficient!?
-	var i;
-	for(i = arr.length - 1; i >= 0; i--) {
-		if($.inArray(arr[i], items) !== -1) {
-			arr.splice(i, 1);
-		}
+// remove element(s) from array
+// NB: nested arrays not supported
+ns.evict = function(items, arr) {
+	if(!items.length) {
+		items = [items];
 	}
+	var res = $.map(items, function(item) {
+		var index = arr.indexOf(item);
+		return index === -1 ? false : arr.splice(index, 1);
+	});
+	return res.length === 1 ? res[0] : res;
 };
 
 // invoke `fn` without the first `count` arguments
