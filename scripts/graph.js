@@ -23,6 +23,9 @@ var graph = {
 // `settings` is an optional set of key-value pairs for width and height
 graph.init = function(container, data, settings) {
 	settings = settings || {};
+	// XXX: `data` handling duplicates igraph#addData
+	data.nodes = data.nodes || [];
+	data.edges = data.edges || [];
 
 	// XXX: unnecessary jQuery dependency?
 	container = container.jquery ? container : $(container);

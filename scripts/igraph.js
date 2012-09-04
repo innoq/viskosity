@@ -44,9 +44,11 @@ igraph.undo = function() {
 	this.toggleHighlight();
 };
 igraph.addData = function(data) {
-	if(data.nodes.length || data.edges.length) {
-		$.each(data.nodes, pusher(this.graph.nodes()));
-		$.each(data.edges, pusher(this.graph.links()));
+	var nodes = data.nodes || [];
+	var edges = data.edges || [];
+	if(nodes.length || edges.length) {
+		$.each(nodes, pusher(this.graph.nodes()));
+		$.each(edges, pusher(this.graph.links()));
 		this.render();
 	}
 	this.history.push(data);

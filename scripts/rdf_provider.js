@@ -19,10 +19,13 @@ var provider = {};
 provider.init = function() {
 	this.store = Object.create(VISKOSITY.graphStore);
 	this.store.init();
+	this.ref = $(this); // TODO: rename
 };
 provider.request = function(node, data, callback) { // XXX: `data` obsolete due to store!?
 	if(!node.uri) { throw "missing URI"; } // XXX: DEBUG?
-	this.callback = callback; // XXX: hacky
+
+	this.ref.bind("newData", drop(callback)); // TODO: rename event
+
 	$.get(node.uri, $.proxy(this.processResponse, this)); // TODO: specify Accept header, error handling
 };
 provider.processResponse = function(doc, status, xhr) {
@@ -33,35 +36,10 @@ provider.processResponse = function(doc, status, xhr) {
 	var concepts = this.db.where("?concept rdf:type skos:Concept").
 			map(drop(prop("concept")));
 	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
+	this.ref.trigger("newData", { nodes: nodes });
 
-	var self = this;
-	var edges = $.map(relationTypes, function(value, type) {
-		var query = "?source <" + type + "> ?target";
-		var edges = self.db.where(query).map(function(i, data) {
-			var resources = [data.source, data.target];
-			var _nodes = $.map(resources, function(resource, i) {
-				var uri = resourceID(resource);
-				var node = store.getNode(uri);
-				if(!node) { // XXX: breaks encapsulation
-					node = { id: uri, uri: uri }; // XXX: redundant
-					store.addNode(node);
-					nodes.push(node);
-				}
-				return node;
-			});
-
-			var edge = {
-				source: _nodes[0],
-				target: _nodes[1],
-				value: value
-			};
-
-			store.addEdge(edge);
-			return edge;
-		});
-		return Array.prototype.slice.call(edges, 0); // ensures flattening
-	});
-	this.callback({ nodes: nodes, edges: edges });
+	var edges = $.map(relationTypes, $.proxy(this.rel2edges, this));
+	this.ref.trigger("newData", { edges: edges });
 };
 provider.concept2node = function(concept) {
 	var labels = this.db.where(concept + " skos:prefLabel ?label").
@@ -77,6 +55,33 @@ provider.concept2node = function(concept) {
 	this.store.addNode(node);
 	return node;
 };
+provider.rel2edges = function(weight, relType) {
+	var query = "?source <" + relType + "> ?target";
+	var self = this;
+	var edges = this.db.where(query).map(function(i, data) {
+		var resources = [data.source, data.target];
+		var nodeTuple = $.map(resources, function(resource, i) {
+			var uri = resourceID(resource);
+			var node = self.store.getNode(uri);
+			if(!node) { // XXX: breaks encapsulation
+				node = { id: uri, uri: uri }; // XXX: redundant
+				self.store.addNode(node);
+				self.ref.trigger("newData", { nodes: [node] });
+			}
+			return node;
+		});
+
+		var edge = {
+			source: nodeTuple[0],
+			target: nodeTuple[1],
+			value: weight
+		};
+
+		self.store.addEdge(edge);
+		return edge;
+	});
+	return Array.prototype.slice.call(edges, 0); // required for flattening
+}
 
 function generateNode(resource, label, relCount) {
 	var node = {
