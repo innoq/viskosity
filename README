@@ -24,3 +24,11 @@ Architecture
 * `igraph.js` extends this module to provide interactive features
 * data retrieval occurs through so-called providers - this adapter mechanism is
   documented in `sample_provider.js`
+
+
+License
+=======
+
+Copyright 2012 innoQ Deutschland GmbH
+
+Licensed under the Apache License, Version 2.0
