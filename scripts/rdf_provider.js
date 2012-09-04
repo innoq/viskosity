@@ -23,34 +23,21 @@ provider.init = function() {
 provider.request = function(node, data, callback) { // XXX: `data` obsolete due to store!?
 	if(!node.uri) { throw "missing URI"; } // XXX: DEBUG?
 	this.callback = callback; // XXX: hacky
-	$.get(node.uri, $.proxy(this.processResponse, this)); // TODO: specify Accept header
+	$.get(node.uri, $.proxy(this.processResponse, this)); // TODO: specify Accept header, error handling
 };
 provider.processResponse = function(doc, status, xhr) {
-	var db = parseRDF(doc);
+	this.db = parseRDF(doc);
 	var store = this.store;
 
 	// XXX: hard-coded namespace prefixes; these are theoretically arbitrary (read from incoming data)
-	var concepts = db.where("?concept rdf:type skos:Concept").
+	var concepts = this.db.where("?concept rdf:type skos:Concept").
 			map(drop(prop("concept")));
-	var nodes = $.map(concepts, function(concept) {
-		var labels = db.where(concept + " skos:prefLabel ?label").
-				map(drop(prop("label", "value"))).
-				map(drop(fixLiteral));
+	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
 
-		var relations = Object.keys(relationTypes);
-		relations = db.about(concept).filter(function(i, data) {
-			return $.inArray(data.property.value.toString(), relations) !== -1;
-		});
-
-		var node = concept2node(concept, labels[0], relations.length); // XXX: label handling hacky; should select by locale
-		store.addNode(node);
-
-		return node;
-	});
-
+	var self = this;
 	var edges = $.map(relationTypes, function(value, type) {
 		var query = "?source <" + type + "> ?target";
-		var edges = db.where(query).map(function(i, data) {
+		var edges = self.db.where(query).map(function(i, data) {
 			var resources = [data.source, data.target];
 			var _nodes = $.map(resources, function(resource, i) {
 				var uri = resourceID(resource);
@@ -76,8 +63,22 @@ provider.processResponse = function(doc, status, xhr) {
 	});
 	this.callback({ nodes: nodes, edges: edges });
 };
+provider.concept2node = function(concept) {
+	var labels = this.db.where(concept + " skos:prefLabel ?label").
+			map(drop(prop("label", "value"))).
+			map(drop(fixLiteral));
 
-function concept2node(resource, label, relCount) {
+	var relations = Object.keys(relationTypes);
+	relations = this.db.about(concept).filter(function(i, data) {
+		return $.inArray(data.property.value.toString(), relations) !== -1;
+	});
+
+	var node = generateNode(concept, labels[0], relations.length); // XXX: label handling hacky; should select by locale
+	this.store.addNode(node);
+	return node;
+};
+
+function generateNode(resource, label, relCount) {
 	var node = {
 		id: resourceID(resource),
 		uri: resource.value.toString()
