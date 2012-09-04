@@ -8,9 +8,6 @@ VISKOSITY.rdfProvider = (function($) { // TODO: rename to SKOS provider
 var prop = VISKOSITY.getProp,
 	drop = VISKOSITY.dropArgs;
 
-var store = Object.create(VISKOSITY.graphStore); // XXX: singleton
-store.init();
-
 // mapping of relation types to connection weightings
 var relationTypes = { // TODO: review values -- XXX: SKOS URLs must also take into account http://www.w3.org/2009/08/skos-reference/skos.html#
 	"http://www.w3.org/2004/02/skos/core#related": 1,
@@ -18,10 +15,19 @@ var relationTypes = { // TODO: review values -- XXX: SKOS URLs must also take in
 	"http://www.w3.org/2004/02/skos/core#narrower": 2
 };
 
-var provider = function(node, data, callback) {
+var provider = {};
+provider.init = function() {
+	this.store = Object.create(VISKOSITY.graphStore);
+	this.store.init();
+};
+provider.request = function(node, data, callback) { // XXX: `data` obsolete due to store!?
 	if(!node.uri) { throw "missing URI"; } // XXX: DEBUG?
-	$.get(node.uri, function(doc, status, xhr) { // TODO: specify Accept header
+	this.callback = callback; // XXX: hacky
+	$.get(node.uri, $.proxy(this.processResponse, this)); // TODO: specify Accept header
+};
+provider.processResponse = function(doc, status, xhr) {
 		var db = parseRDF(doc);
+		var store = this.store;
 
 		// XXX: hard-coded namespace prefixes; these are theoretically arbitrary (read from incoming data)
 		var concepts = db.where("?concept rdf:type skos:Concept").
@@ -68,8 +74,7 @@ var provider = function(node, data, callback) {
 			});
 			return Array.prototype.slice.call(edges, 0); // ensures flattening
 		});
-		callback({ nodes: nodes, edges: edges });
-	});
+		this.callback({ nodes: nodes, edges: edges });
 };
 
 function concept2node(resource, label, relCount) {
@@ -123,6 +128,12 @@ function fixLiteral(str) {
 	return str.replace(/^"(.*)"$/, "$1");
 }
 
-return provider;
+return function() { // NB: factory
+	var prv = Object.create(provider);
+	prv.init();
+	return function() { // bind function context -- TODO use Function#bind
+		prv.request.apply(prv, arguments);
+	};
+};
 
 }(jQuery));
