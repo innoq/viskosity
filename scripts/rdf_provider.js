@@ -1,4 +1,4 @@
-/*jslint vars: true, white: true */
+/*jslint vars: true, unparam: true, white: true */
 /*global jQuery, VISKOSITY */
 
 VISKOSITY.rdfProvider = (function($) { // TODO: rename to SKOS provider
@@ -30,7 +30,6 @@ provider.request = function(node, data, callback) { // XXX: `data` obsolete due 
 };
 provider.processResponse = function(doc, status, xhr) {
 	this.db = parseRDF(doc);
-	var store = this.store;
 
 	// XXX: hard-coded namespace prefixes; these are theoretically arbitrary (read from incoming data)
 	var concepts = this.db.where("?concept rdf:type skos:Concept").
@@ -81,7 +80,7 @@ provider.rel2edges = function(weight, relType) {
 		return edge;
 	});
 	return Array.prototype.slice.call(edges, 0); // required for flattening
-}
+};
 
 function generateNode(resource, label, relCount) {
 	var node = {
