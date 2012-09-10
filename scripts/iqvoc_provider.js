@@ -8,7 +8,7 @@ VISKOSITY.iQvocProvider = (function($) {
 var pusher = VISKOSITY.pusher;
 
 var provider = function self(node, data, callback) {
-	$.getJSON(node.uri, function(data, status, xhr) {
+	$.getJSON(node.toString(), function(data, status, xhr) {
 		data = self.transform(data);
 		callback(data);
 	});
@@ -38,13 +38,11 @@ provider.transform = function(concept) {
 provider.concept2node = function(concept) {
 	var id = concept.origin;
 	var rels = concept.relations;
-	var node = {
-		id: id,
-		uri: "data/" + id + ".json", // XXX: hard-coded
+	var node = VISKOSITY.node.create("data/" + id + ".json", { // XXX: hard-coded
 		name: concept.labels[0].value,
 		relations: rels.length !== undefined ? rels.length : rels,
 		group: 1 // XXX: hard-coded
-	};
+	});
 	return node;
 };
 

@@ -22,11 +22,9 @@ provider.init = function() {
 	this.ref = $(this); // TODO: rename
 };
 provider.request = function(node, data, callback) { // XXX: `data` obsolete due to store!?
-	if(!node.uri) { throw "missing URI"; } // XXX: DEBUG?
-
 	this.ref.bind("newData", drop(callback)); // TODO: rename event
 
-	$.get(node.uri, $.proxy(this.processResponse, this), "xml");
+	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");
 };
 provider.processResponse = function(doc, status, xhr) {
 	this.db = parseRDF(doc);
@@ -63,7 +61,7 @@ provider.rel2edges = function(weight, relType) {
 			var uri = resourceID(resource);
 			var node = self.store.getNode(uri);
 			if(!node) { // XXX: breaks encapsulation
-				node = { id: uri, uri: uri }; // XXX: redundant
+				node = VISKOSITY.node.create(uri);
 				self.store.addNode(node);
 				self.ref.trigger("newData", { nodes: [node] });
 			}
@@ -83,10 +81,7 @@ provider.rel2edges = function(weight, relType) {
 };
 
 function generateNode(resource, label, relCount) {
-	var node = {
-		id: resourceID(resource),
-		uri: resource.value.toString()
-	};
+	var node = VISKOSITY.node.create(resourceID(resource));
 	if(label) {
 		node.name = label;
 	}
@@ -124,7 +119,7 @@ function determineNamespaces(node) {
 }
 
 function resourceID(resource) {
-	return resource.toString().replace(/^<(.*)>$/, "$1");
+	return resource.value.toString();
 }
 
 // workaround: rdfQuery mistakenly includes literal quotation marks

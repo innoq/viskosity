@@ -36,6 +36,21 @@ if(!Array.prototype.indexOf) {
 	};
 }
 
+// XXX: does not belong here
+ns.node = {
+	create: function(id, props) {
+		var self = Object.create(this);
+		self.id = id;
+		if(props) {
+			$.extend(self, props);
+		}
+		return self;
+	},
+	toString: function() {
+		return this.id;
+	}
+};
+
 ns.cappedStack = function(maxItems) {
 	var arr = [];
 	return {

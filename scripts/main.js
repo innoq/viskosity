@@ -16,6 +16,6 @@ graph.init("#viz", {}, {
 	provider: provider
 });
 
-provider({ uri: uri }, null, $.proxy(graph.addData, graph));
+provider(VISKOSITY.node.create(uri), null, $.proxy(graph.addData, graph));
 
 }(jQuery));
