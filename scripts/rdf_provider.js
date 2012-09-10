@@ -26,7 +26,7 @@ provider.request = function(node, data, callback) { // XXX: `data` obsolete due 
 
 	this.ref.bind("newData", drop(callback)); // TODO: rename event
 
-	$.get(node.uri, $.proxy(this.processResponse, this)); // TODO: specify Accept header, error handling
+	$.get(node.uri, $.proxy(this.processResponse, this), "xml");
 };
 provider.processResponse = function(doc, status, xhr) {
 	this.db = parseRDF(doc);
