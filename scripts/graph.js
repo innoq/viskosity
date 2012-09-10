@@ -91,6 +91,7 @@ graph.render = function() { // TODO: rename?
 			attr("d", this.shape()).
 			style("fill", this.colorize);
 	newNodes.append("text").text(prop("name"));
+	nodes.select("text").text(prop("name")); // update existing nodes
 	if(this.onClick) {
 		newNodes.on("click", setContext(this.onClick, { graph: this }));
 	}
