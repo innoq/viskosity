@@ -16,7 +16,7 @@ var graph = {
 	colorize: (function(fn) { // TODO: rename
 		return function(item) { return fn(item.group || 0); };
 	}(d3.scale.category20())), // XXX: bad default?
-	identity: function(item) { return item.id; } // XXX: bad expectation?
+	identity: prop("id")
 };
 // `container` may be a DOM node, selector or jQuery object
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
