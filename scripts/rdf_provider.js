@@ -49,8 +49,15 @@ provider.concept2node = function(concept) {
 	});
 
 	var node = generateNode(concept, labels[0], relations.length); // XXX: label handling hacky; should select by locale
-	this.store.addNode(node);
-	return node;
+
+	var storedNode = this.store.getNode(node.id);
+	if(storedNode) {
+		$.extend(storedNode, node); // XXX: side-effecty; bad encapsulation
+		return null;
+	} else {
+		this.store.addNode(node);
+		return node;
+	}
 };
 provider.rel2edges = function(weight, relType) {
 	var query = "?source <" + relType + "> ?target";
