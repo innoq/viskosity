@@ -25,7 +25,7 @@ igraph.onClick = function(item) {
 	var self = this.graph;
 	self.toggleHighlight(this.context);
 	var data = { nodes: self.graph.nodes(), edges: self.graph.links() };
-	self.provider(item, data, $.proxy(self.addData, self));
+	self.provider(item, $.proxy(self.addData, self));
 };
 igraph.toggleHighlight = function(el) { // TODO: rename
 	this.root.selectAll(".active").classed("active", false);

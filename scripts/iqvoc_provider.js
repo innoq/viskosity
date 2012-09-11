@@ -7,7 +7,7 @@ VISKOSITY.iQvocProvider = (function($) {
 
 var pusher = VISKOSITY.pusher;
 
-var provider = function self(node, data, callback) {
+var provider = function self(node, callback) {
 	$.getJSON(node.toString(), function(data, status, xhr) {
 		data = self.transform(data);
 		callback(data);

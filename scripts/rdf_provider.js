@@ -21,7 +21,7 @@ provider.init = function() {
 	this.store.init();
 	this.ref = $(this); // TODO: rename
 };
-provider.request = function(node, data, callback) { // XXX: `data` obsolete due to store!?
+provider.request = function(node, callback) {
 	this.ref.bind("newData", drop(callback)); // TODO: rename event
 
 	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");

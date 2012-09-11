@@ -37,7 +37,7 @@ function generateEdge(source, target, value) {
 // `node` is the point of origin, usually after the user has clicked a node to extend it
 // `data` is an object with members `nodes` and `edges`, representing the current data set
 // `callback` expects a similar object with new nodes and edges
-return function(node, data, callback) {
+return function(node, callback) {
 	var i;
 
 	var nodes = [];
