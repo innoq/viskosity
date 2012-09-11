@@ -32,7 +32,7 @@ provider.request = function(node, callback) {
 	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");
 };
 provider.processResponse = function(doc, status, xhr) {
-	this.db = parseRDF(doc);
+	this.db = $.rdf().load(doc);
 
 	var concepts = this.db.where(triple("?concept", "rdf:type", "skos:Concept")).
 			map(drop(prop("concept")));
@@ -100,33 +100,6 @@ function generateNode(resource, label, relCount) {
 		node.relations = relCount;
 	}
 	return node;
-}
-
-function parseRDF(doc) {
-	var namespaces = determineNamespaces(doc.documentElement); // XXX: irrelevant?
-	var base = delete namespaces["default"];
-
-	var db = $.rdf({ base: base, namespaces: namespaces });
-	db.load(doc);
-	return db;
-}
-
-// returns a mapping of namespaces to URIs based on XML attributes, including a
-// "default" namespace
-function determineNamespaces(node) {
-	var attribs = node.attributes;
-	var namespaces = {};
-	var i;
-	for(i = 0; i < attribs.length; i++) {
-		var attr = attribs[i];
-		if(attr.name === "xmlns") {
-			namespaces["default"] = attr.value;
-		} else if(attr.name.indexOf("xmlns:") !== -1) {
-			var name = attr.name.substr(6);
-			namespaces[name] = attr.value;
-		}
-	}
-	return namespaces;
 }
 
 function resourceID(resource) {
