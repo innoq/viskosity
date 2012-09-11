@@ -8,11 +8,16 @@ VISKOSITY.rdfProvider = (function($) { // TODO: rename to SKOS provider
 var prop = VISKOSITY.getProp,
 	drop = VISKOSITY.dropArgs;
 
+var namespaces = {
+	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+	skos: "http://www.w3.org/2004/02/skos/core#"
+};
+
 // mapping of relation types to connection weightings
 var relationTypes = { // TODO: review values
-	"http://www.w3.org/2004/02/skos/core#related": 1,
-	"http://www.w3.org/2004/02/skos/core#broader": 2,
-	"http://www.w3.org/2004/02/skos/core#narrower": 2
+	"skos:related": 1,
+	"skos:broader": 2,
+	"skos:narrower": 2
 };
 
 var provider = {};
@@ -29,8 +34,7 @@ provider.request = function(node, callback) {
 provider.processResponse = function(doc, status, xhr) {
 	this.db = parseRDF(doc);
 
-	// XXX: hard-coded namespace prefixes; these are theoretically arbitrary (read from incoming data)
-	var concepts = this.db.where("?concept rdf:type skos:Concept").
+	var concepts = this.db.where(triple("?concept", "rdf:type", "skos:Concept")).
 			map(drop(prop("concept")));
 	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
 	this.ref.trigger("newData", { nodes: nodes });
@@ -39,7 +43,7 @@ provider.processResponse = function(doc, status, xhr) {
 	this.ref.trigger("newData", { edges: edges });
 };
 provider.concept2node = function(concept) {
-	var labels = this.db.where(concept + " skos:prefLabel ?label").
+	var labels = this.db.where(triple(concept, "skos:prefLabel", "?label")).
 			map(drop(prop("label", "value"))).
 			map(drop(fixLiteral));
 
@@ -60,7 +64,7 @@ provider.concept2node = function(concept) {
 	}
 };
 provider.rel2edges = function(weight, relType) {
-	var query = "?source <" + relType + "> ?target";
+	var query = triple("?source", relType, "?target");
 	var self = this;
 	var edges = this.db.where(query).map(function(i, data) {
 		var resources = [data.source, data.target];
@@ -99,7 +103,7 @@ function generateNode(resource, label, relCount) {
 }
 
 function parseRDF(doc) {
-	var namespaces = determineNamespaces(doc.documentElement);
+	var namespaces = determineNamespaces(doc.documentElement); // XXX: irrelevant?
 	var base = delete namespaces["default"];
 
 	var db = $.rdf({ base: base, namespaces: namespaces });
@@ -127,6 +131,20 @@ function determineNamespaces(node) {
 
 function resourceID(resource) {
 	return resource.value.toString();
+}
+
+function triple(s, p, o) {
+	return $.map(arguments, function(item, i) {
+		if(!item.indexOf) {
+			return item.toString();
+		} else if(item.indexOf("<") === 0 || item.indexOf(":") === -1) {
+			return item;
+		} else { // resolve namespace prefix
+			item = item.split(":");
+			item[0] = namespaces[item[0]];
+			return ["<"].concat(item).concat(">").join("");
+		}
+	}).join(" ");
 }
 
 // workaround: rdfQuery mistakenly includes literal quotation marks
