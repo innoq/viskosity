@@ -25,6 +25,8 @@ Architecture
 * data retrieval occurs through so-called providers - this adapter mechanism is
   documented in `sample_provider.js`
 
+cf. [architecture](https://github.com/innoq/viskosity/wiki/architecture)
+
 
 License
 =======
