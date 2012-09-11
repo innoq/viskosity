@@ -9,7 +9,7 @@ var prop = VISKOSITY.getProp,
 	drop = VISKOSITY.dropArgs;
 
 // mapping of relation types to connection weightings
-var relationTypes = { // TODO: review values -- XXX: SKOS URLs must also take into account http://www.w3.org/2009/08/skos-reference/skos.html#
+var relationTypes = { // TODO: review values
 	"http://www.w3.org/2004/02/skos/core#related": 1,
 	"http://www.w3.org/2004/02/skos/core#broader": 2,
 	"http://www.w3.org/2004/02/skos/core#narrower": 2
