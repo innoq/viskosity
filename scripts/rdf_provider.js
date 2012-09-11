@@ -27,7 +27,7 @@ provider.init = function() {
 	this.observer = $(this);
 };
 provider.request = function(node, callback) {
-	this.observer.bind("incoming", drop(callback));
+	this.observer.bind("incoming", drop(callback)); // XXX: this leads to repeated bindings - what we need is per-request callbacks!?
 
 	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");
 };
@@ -37,10 +37,9 @@ provider.processResponse = function(doc, status, xhr) {
 	var concepts = this.db.where(triple("?concept", "rdf:type", "skos:Concept")).
 			map(drop(prop("concept")));
 	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
-	this.observer.trigger("incoming", { nodes: nodes });
-
 	var edges = $.map(relationTypes, $.proxy(this.rel2edges, this));
-	this.observer.trigger("incoming", { edges: edges });
+
+	this.observer.trigger("incoming", { nodes: nodes, edges: edges });
 };
 provider.concept2node = function(concept) {
 	var labels = this.db.where(triple(concept, "skos:prefLabel", "?label")).
