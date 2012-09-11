@@ -24,10 +24,10 @@ var provider = {};
 provider.init = function() {
 	this.store = Object.create(VISKOSITY.graphStore);
 	this.store.init();
-	this.ref = $(this); // TODO: rename
+	this.observer = $(this);
 };
 provider.request = function(node, callback) {
-	this.ref.bind("newData", drop(callback)); // TODO: rename event
+	this.observer.bind("incoming", drop(callback));
 
 	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");
 };
@@ -37,10 +37,10 @@ provider.processResponse = function(doc, status, xhr) {
 	var concepts = this.db.where(triple("?concept", "rdf:type", "skos:Concept")).
 			map(drop(prop("concept")));
 	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
-	this.ref.trigger("newData", { nodes: nodes });
+	this.observer.trigger("incoming", { nodes: nodes });
 
 	var edges = $.map(relationTypes, $.proxy(this.rel2edges, this));
-	this.ref.trigger("newData", { edges: edges });
+	this.observer.trigger("incoming", { edges: edges });
 };
 provider.concept2node = function(concept) {
 	var labels = this.db.where(triple(concept, "skos:prefLabel", "?label")).
@@ -74,7 +74,7 @@ provider.rel2edges = function(weight, relType) {
 			if(!node) { // XXX: breaks encapsulation
 				node = VISKOSITY.node.create(uri);
 				self.store.addNode(node);
-				self.ref.trigger("newData", { nodes: [node] });
+				self.observer.trigger("incoming", { nodes: [node] });
 			}
 			return node;
 		});
