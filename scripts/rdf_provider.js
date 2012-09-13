@@ -31,7 +31,7 @@ request.processResponse = function(doc, status, xhr) {
 
 	var concepts = db.where(triple("?concept", "rdf:type", "skos:Concept"));
 	concepts.each(function(i, item) {
-		var node = VISKOSITY.node.create(resourceID(item.concept));
+		var node = concept2node(item.concept);
 		self.store.addNode(node);
 	});
 
@@ -48,7 +48,7 @@ request.processResponse = function(doc, status, xhr) {
 };
 
 function concept2node(concept) {
-	return VISKOSITY.node.create(resourceID(concept));
+	return { id: resourceID(concept) };
 }
 
 function resourceID(resource) {
@@ -76,7 +76,7 @@ function fixLiteral(str) {
 }
 
 return function(node, store, callback) {
-	request.create(node.toString(), store, callback);
+	request.create(node.id, store, callback);
 };
 
 }(jQuery));

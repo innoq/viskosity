@@ -35,8 +35,8 @@ store.registerNode = function(node) {
 };
 store.addEdge = function(sourceID, targetID) { // XXX: API inconsistent with nodes'
 	// TODO: validate IDs
-	this.addNode(VISKOSITY.node.create(sourceID));
-	this.addNode(VISKOSITY.node.create(targetID));
+	this.addNode({ id: sourceID });
+	this.addNode({ id: targetID });
 	var source = this.getNode(sourceID);
 	var target = this.getNode(targetID);
 	// TODO: discard dupes

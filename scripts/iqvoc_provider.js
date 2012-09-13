@@ -38,7 +38,8 @@ provider.transform = function(concept) {
 provider.concept2node = function(concept) {
 	var id = concept.origin;
 	var rels = concept.relations;
-	var node = VISKOSITY.node.create("data/" + id + ".json", { // XXX: hard-coded
+	var node = {
+		id: "data/" + id + ".json", // XXX: hard-coded
 		name: concept.labels[0].value,
 		relations: rels.length !== undefined ? rels.length : rels,
 		group: 1 // XXX: hard-coded

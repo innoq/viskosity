@@ -16,6 +16,6 @@ graph.init("#viz", {}, {
 	provider: provider
 });
 
-provider(VISKOSITY.node.create(uri), graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
+provider({ id: uri }, graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
 
 }(jQuery));
