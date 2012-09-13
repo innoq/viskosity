@@ -5,14 +5,16 @@ VISKOSITY.graphStore = (function($) {
 
 "use strict";
 
+var drop = VISKOSITY.dropArgs;
+
 var store = {};
 store.init = function(nodes, edges) {
-	this.nodes = [];
-	this.edges = [];
-	this.nodeCache = {};
+	// NB: intentionally retaining object identity for arguments
+	this.nodes = nodes || [];
+	this.edges = edges || [];
 
-	$.each(nodes || [], $.proxy(this.addNode, this));
-	$.each(edges || [], $.proxy(this.addEdge, this));
+	this.nodeCache = {};
+	$.each(this.nodes, drop($.proxy(this, "registerNode")));
 
 	return this;
 };
@@ -20,6 +22,9 @@ store.getNode = function(id) {
 	return this.nodeCache[id];
 };
 store.addNode = function(node) {
+	return this.registerNode(node) && this.nodes.push(node);
+};
+store.registerNode = function(node) {
 	if(!node.id) {
 		throw "node lacks ID";
 	}
@@ -27,10 +32,10 @@ store.addNode = function(node) {
 		return false;
 	}
 	this.nodeCache[node.id] = node;
-	return this.nodes.push(node);
+	return true;
 };
 store.addEdge = function(edge) {
-	var index = this.edges.indexOf(edge);
+	var index = this.edges.indexOf(edge); // XXX: relies on object identity
 	if(index !== -1) {
 		return false;
 	}
