@@ -23,9 +23,9 @@ var graph = {
 // `settings` is an optional set of key-value pairs for width and height
 graph.init = function(container, data, settings) {
 	settings = settings || {};
-	// XXX: `data` handling duplicates igraph#addData
-	data.nodes = data.nodes || [];
-	data.edges = data.edges || [];
+
+	this.store = Object.create(VISKOSITY.graphStore);
+	this.store.init(data.nodes, data.edges);
 
 	// XXX: unnecessary jQuery dependency?
 	container = container.jquery ? container : $(container);
@@ -40,7 +40,8 @@ graph.init = function(container, data, settings) {
 			linkStrength(this.linkStrength).
 			size([this.width, this.height]);
 
-	this.graph.nodes(data.nodes).links(data.edges);
+	// NB: intentionally retaining object identity nodes and links/edges
+	this.graph.nodes(this.store.nodes).links(this.store.edges);
 	this.render();
 
 	this.graph.on("tick", $.proxy(this.onTick, this));

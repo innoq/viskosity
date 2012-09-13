@@ -9,7 +9,6 @@ var drop = VISKOSITY.dropArgs;
 
 var store = {};
 store.init = function(nodes, edges) {
-	// NB: intentionally retaining object identity for arguments
 	this.nodes = nodes || [];
 	this.edges = edges || [];
 
@@ -34,12 +33,14 @@ store.registerNode = function(node) {
 	this.nodeCache[node.id] = node;
 	return true;
 };
-store.addEdge = function(edge) {
-	var index = this.edges.indexOf(edge); // XXX: relies on object identity
-	if(index !== -1) {
-		return false;
-	}
-	return this.edges.push(edge);
+store.addEdge = function(sourceID, targetID) { // XXX: API inconsistent with nodes'
+	// TODO: validate IDs
+	this.addNode(VISKOSITY.node.create(sourceID));
+	this.addNode(VISKOSITY.node.create(targetID));
+	var source = this.getNode(sourceID);
+	var target = this.getNode(targetID);
+	// TODO: discard dupes
+	return this.edges.push({ source: source, target: target });
 };
 
 return store;

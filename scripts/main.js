@@ -5,7 +5,7 @@
 
 "use strict";
 
-var provider = VISKOSITY.rdfProvider();
+var provider = VISKOSITY.rdfProvider;
 var uri = document.location.hash.substr(1);
 
 var graph = Object.create(VISKOSITY.igraph);
@@ -16,6 +16,6 @@ graph.init("#viz", {}, {
 	provider: provider
 });
 
-provider(VISKOSITY.node.create(uri), $.proxy(graph.addData, graph));
+provider(VISKOSITY.node.create(uri), graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
 
 }(jQuery));

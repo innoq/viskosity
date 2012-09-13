@@ -35,18 +35,18 @@ function generateEdge(source, target, value) {
 }
 
 // `node` is the point of origin, usually after the user has clicked a node to extend it
-// `data` is an object with members `nodes` and `edges`, representing the current data set
+// `store` is a graphStore instance representing the current data set
 // `callback` expects a similar object with new nodes and edges
-return function(node, callback) {
+return function(node, store, callback) {
 	var i;
 
 	var nodes = [];
 	for(i = 0; i < 10; i++) {
 		var newNode = generateNode();
+		store.addNode(newNode);
 		nodes.push(newNode);
 	}
 
-	var edges = [];
 	var edgeCount = rand(nodes.length);
 	for(i = 0; i < edgeCount; i++) {
 		var source;
@@ -62,15 +62,10 @@ return function(node, callback) {
 
 		var value = rand(5);
 
-		var edge = generateEdge(source, target, value);
-		edges.push(edge);
+		store.addEdge(source.id, target.id);
 	}
 
-	var newData = {
-		nodes: nodes,
-		edges: edges
-	};
-	callback(newData);
+	callback();
 };
 
 }());

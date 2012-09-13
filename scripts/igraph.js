@@ -23,21 +23,12 @@ igraph.onClick = function(item) {
 	var self = this.graph;
 	self.toggleHighlight(this.context);
 	var data = { nodes: self.graph.nodes(), edges: self.graph.links() };
-	self.provider(item, $.proxy(self.addData, self));
+	self.provider(item, self.store, $.proxy(self, "render"));
 };
 igraph.toggleHighlight = function(el) { // TODO: rename
 	this.root.selectAll(".active").classed("active", false);
 	if(el) {
 		d3.select(el).classed("active", true);
-	}
-};
-igraph.addData = function(data) {
-	var nodes = data.nodes || [];
-	var edges = data.edges || [];
-	if(nodes.length || edges.length) {
-		$.each(nodes, pusher(this.graph.nodes()));
-		$.each(edges, pusher(this.graph.links()));
-		this.render();
 	}
 };
 

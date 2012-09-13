@@ -5,9 +5,6 @@ VISKOSITY.rdfProvider = (function($) { // TODO: rename to SKOS provider
 
 "use strict";
 
-var prop = VISKOSITY.getProp,
-	drop = VISKOSITY.dropArgs;
-
 var namespaces = {
 	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 	skos: "http://www.w3.org/2004/02/skos/core#"
@@ -20,85 +17,38 @@ var relationTypes = { // TODO: review values
 	"skos:narrower": 2
 };
 
-var provider = {};
-provider.init = function() {
-	this.store = Object.create(VISKOSITY.graphStore);
-	this.store.init();
-	this.observer = $(this);
+var request = {}; // TODO: rename?
+request.create = function(uri, store, callback) {
+	var self = Object.create(this);
+	self.store = store;
+	self.callback = callback;
+	$.get(uri, $.proxy(self, "processResponse"), "xml");
+	return self;
 };
-provider.request = function(node, callback) {
-	this.observer.bind("incoming", drop(callback)); // XXX: this leads to repeated bindings - what we need is per-request callbacks!?
-
-	$.get(node.toString(), $.proxy(this.processResponse, this), "xml");
-};
-provider.processResponse = function(doc, status, xhr) {
-	this.db = $.rdf().load(doc);
-
-	var concepts = this.db.where(triple("?concept", "rdf:type", "skos:Concept")).
-			map(drop(prop("concept")));
-	var nodes = $.map(concepts, $.proxy(this.concept2node, this));
-	var edges = $.map(relationTypes, $.proxy(this.rel2edges, this));
-
-	this.observer.trigger("incoming", { nodes: nodes, edges: edges });
-};
-provider.concept2node = function(concept) {
-	var labels = this.db.where(triple(concept, "skos:prefLabel", "?label")).
-			map(drop(prop("label", "value"))).
-			map(drop(fixLiteral));
-
-	var relations = Object.keys(relationTypes);
-	relations = this.db.about(concept).filter(function(i, data) {
-		return $.inArray(data.property.value.toString(), relations) !== -1;
-	});
-
-	var node = generateNode(concept, labels[0], relations.length); // XXX: label handling hacky; should select by locale
-
-	var storedNode = this.store.getNode(node.id);
-	if(storedNode) {
-		$.extend(storedNode, node); // XXX: side-effecty; bad encapsulation
-		return null;
-	} else {
-		this.store.addNode(node);
-		return node;
-	}
-};
-provider.rel2edges = function(weight, relType) {
-	var query = triple("?source", relType, "?target");
+request.processResponse = function(doc, status, xhr) {
 	var self = this;
-	var edges = this.db.where(query).map(function(i, data) {
-		var resources = [data.source, data.target];
-		var nodeTuple = $.map(resources, function(resource, i) {
-			var uri = resourceID(resource);
-			var node = self.store.getNode(uri);
-			if(!node) { // XXX: breaks encapsulation
-				node = VISKOSITY.node.create(uri);
-				self.store.addNode(node);
-				self.observer.trigger("incoming", { nodes: [node] });
-			}
-			return node;
-		});
+	var db = $.rdf().load(doc);
 
-		var edge = {
-			source: nodeTuple[0],
-			target: nodeTuple[1],
-			value: weight
-		};
-
-		self.store.addEdge(edge);
-		return edge;
+	var concepts = db.where(triple("?concept", "rdf:type", "skos:Concept"));
+	concepts.each(function(i, item) {
+		var node = VISKOSITY.node.create(resourceID(item.concept));
+		self.store.addNode(node);
 	});
-	return Array.prototype.slice.call(edges, 0); // required for flattening
+
+	$.each(relationTypes, function(relType, weight) {
+		var relations = db.where(triple("?source", relType, "?target"));
+		relations.each(function(i, item) {
+			var source = resourceID(item.source);
+			var target = resourceID(item.target);
+			self.store.addEdge(source, target);
+		});
+	});
+
+	this.callback();
 };
 
-function generateNode(resource, label, relCount) {
-	var node = VISKOSITY.node.create(resourceID(resource));
-	if(label) {
-		node.name = label;
-	}
-	if(relCount) {
-		node.relations = relCount;
-	}
-	return node;
+function concept2node(concept) {
+	return VISKOSITY.node.create(resourceID(concept));
 }
 
 function resourceID(resource) {
@@ -125,12 +75,8 @@ function fixLiteral(str) {
 	return str.replace(/^"(.*)"$/, "$1");
 }
 
-return function() { // NB: factory
-	var prv = Object.create(provider);
-	prv.init();
-	return function() { // bind function context -- TODO use Function#bind
-		prv.request.apply(prv, arguments);
-	};
+return function(node, store, callback) {
+	request.create(node.toString(), store, callback);
 };
 
 }(jQuery));
