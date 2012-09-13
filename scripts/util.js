@@ -51,19 +51,6 @@ ns.node = {
 	}
 };
 
-ns.cappedStack = function(maxItems) {
-	var arr = [];
-	return {
-		push: function(item) {
-			arr.push(item);
-			if(arr.length > maxItems) {
-				arr.shift();
-			}
-		},
-		pop: function() { return arr.pop(); }
-	};
-};
-
 ns.setContext = function(fn, ctx) {
 	return function() {
 		var context = $.extend({ context: this }, ctx);
@@ -91,19 +78,6 @@ ns.pusher = function(arr) {
 	return function(i, item) {
 		arr.push(item);
 	};
-};
-
-// remove element(s) from array
-// NB: nested arrays not supported
-ns.evict = function(items, arr) {
-	if(!items.length) {
-		items = [items];
-	}
-	var res = $.map(items, function(item) {
-		var index = arr.indexOf(item);
-		return index === -1 ? false : arr.splice(index, 1);
-	});
-	return res.length === 1 ? res[0] : res;
 };
 
 // invoke `fn` without the first `count` arguments

@@ -7,8 +7,7 @@ VISKOSITY.igraph = (function($) {
 "use strict";
 
 var base = VISKOSITY.graph,
-	pusher = VISKOSITY.pusher,
-	evict = VISKOSITY.evict;
+	pusher = VISKOSITY.pusher;
 
 var igraph = Object.create(base);
 // `settings.provider` is a function which is used to retrieve additional data -
@@ -18,7 +17,6 @@ igraph.init = function() {
 	base.init.apply(this, arguments);
 	var settings = arguments[arguments.length - 1];
 	this.provider = settings.provider;
-	this.history = VISKOSITY.cappedStack(1);
 	this.root.on("mousedown", $.proxy(this.toggleHighlight, this));
 };
 igraph.onClick = function(item) {
@@ -33,16 +31,6 @@ igraph.toggleHighlight = function(el) { // TODO: rename
 		d3.select(el).classed("active", true);
 	}
 };
-igraph.undo = function() {
-	var data = this.history.pop();
-	if(!data) {
-		return;
-	}
-	evict(data.nodes, this.graph.nodes());
-	evict(data.edges, this.graph.links());
-	this.render();
-	this.toggleHighlight();
-};
 igraph.addData = function(data) {
 	var nodes = data.nodes || [];
 	var edges = data.edges || [];
@@ -51,7 +39,6 @@ igraph.addData = function(data) {
 		$.each(edges, pusher(this.graph.links()));
 		this.render();
 	}
-	this.history.push(data);
 };
 
 return igraph;
