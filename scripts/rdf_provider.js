@@ -28,13 +28,13 @@ request.create = function(uri, store, callback) {
 	return self;
 };
 request.processResponse = function(doc, status, xhr) {
-	var self = this;
 	var db = $.rdf().load(doc);
+	var store = this.store;
 
 	var concepts = db.where(triple("?concept", "rdf:type", "skos:Concept"));
 	concepts.each(function(i, item) {
 		var node = concept2node(item.concept);
-		self.store.addNode(node);
+		store.addNode(node);
 	});
 
 	$.each(relationTypes, function(relType, weight) {
@@ -42,7 +42,7 @@ request.processResponse = function(doc, status, xhr) {
 		relations.each(function(i, item) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
-			self.store.addEdge(sourceID, targetID);
+			store.addEdge(sourceID, targetID);
 		});
 	});
 
@@ -50,7 +50,7 @@ request.processResponse = function(doc, status, xhr) {
 		var labels = db.where(triple("?entity", labelType, "?label"));
 		labels.each(function(i, item) {
 			var id = resourceID(item.entity); // might be concept or collection
-			var node = self.store.getNode(id);
+			var node = store.getNode(id);
 			if(node) {
 				node.name = fixLiteral(item.label.value); // XXX: breaks encapsulation!?
 			}
