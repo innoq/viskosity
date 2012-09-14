@@ -50,7 +50,7 @@ request.processResponse = function(doc, status, xhr) {
 		relations.each(function(i, item) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
-			store.addEdge(sourceID, targetID);
+			store.addEdge(sourceID, targetID, { value: weight });
 			// inference: both ends are SKOS concepts
 			var group = nodeTypes["concept"];
 			store.updateNode(sourceID, { group: group });
