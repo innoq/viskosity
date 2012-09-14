@@ -25,8 +25,26 @@ store.init = function(nodes, edges) {
 store.getNode = function(id) {
 	return this.nodeCache[id];
 };
-store.addNode = function(node) {
-	return this.registerNode(node) && this.nodes.push(node);
+store.addNode = function(id, attribs) {
+	// TODO: validate ID
+	var node = { id: id };
+	var isNew = this.registerNode(node) && this.nodes.push(node);
+	if(isNew && attribs) { // XXX: undesirable?
+		this.updateNode(id, attribs);
+	}
+	return isNew;
+};
+store.updateNode = function(id, attribs) {
+	var node = this.getNode(id);
+
+	if(!node) {
+		throw "invalid node ID";
+	}
+	if(attribs.id && attribs.id !== node.id) {
+		throw "must not update ID";
+	}
+
+	return $.extend(node, attribs);
 };
 store.registerNode = function(node) {
 	if(!node.id) {
@@ -35,17 +53,25 @@ store.registerNode = function(node) {
 	if(this.nodeCache[node.id]) {
 		return false;
 	}
+
 	this.nodeCache[node.id] = node;
 	return true;
 };
-store.addEdge = function(sourceID, targetID) { // XXX: API inconsistent with nodes'
-	// TODO: validate IDs
-	this.addNode({ id: sourceID });
-	this.addNode({ id: targetID });
+store.addEdge = function(sourceID, targetID, attribs) {
+	this.addNode(sourceID);
+	this.addNode(targetID);
 	var source = this.getNode(sourceID);
 	var target = this.getNode(targetID);
-	// TODO: discard dupes
-	return this.edges.push({ source: source, target: target });
+	if(!source || !target) {
+		throw "invalid endpoint";
+	}
+	// TODO: discard dupes / detect modifications?
+	var edge = { source: source, target: target };
+	if(attribs) {
+		$.extend(edge, attribs) // TODO: guard against `source` and `target` modifications
+	}
+	this.edges.push(edge);
+	return edge;
 };
 
 return store;

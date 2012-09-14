@@ -17,6 +17,10 @@ var relationTypes = { // TODO: review values
 	"skos:narrower": 2
 };
 
+var nodeGroups = {
+	concept: 1
+};
+
 var labelTypes = ["skos:prefLabel", "skos:altLabel"]; // sorted by preference
 
 var request = {};
@@ -33,8 +37,8 @@ request.processResponse = function(doc, status, xhr) {
 
 	var concepts = db.where(triple("?concept", "rdf:type", "skos:Concept"));
 	concepts.each(function(i, item) {
-		var node = concept2node(item.concept);
-		store.addNode(node);
+		var id = resourceID(item.concept);
+		store.addNode(id, { group: nodeGroups["concept"] });
 	});
 
 	$.each(relationTypes, function(relType, weight) {
@@ -43,6 +47,10 @@ request.processResponse = function(doc, status, xhr) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
 			store.addEdge(sourceID, targetID);
+			// we know both ends are SKOS concepts
+			var group = nodeGroups["concept"];
+			store.updateNode(sourceID, { group: group });
+			store.updateNode(targetID, { group: group });
 		});
 	});
 
@@ -52,17 +60,13 @@ request.processResponse = function(doc, status, xhr) {
 			var id = resourceID(item.entity); // might be concept or collection
 			var node = store.getNode(id);
 			if(node) {
-				node.name = fixLiteral(item.label.value); // XXX: breaks encapsulation!?
+				store.updateNode(id, { name: fixLiteral(item.label.value) });
 			}
 		});
 	});
 
 	this.callback();
 };
-
-function concept2node(concept) {
-	return { id: resourceID(concept) };
-}
 
 function resourceID(resource) {
 	return resource.value.toString();
