@@ -17,7 +17,7 @@ igraph.init = function() {
 	base.init.apply(this, arguments);
 	var settings = arguments[arguments.length - 1];
 	this.provider = settings.provider;
-	this.root.on("mousedown", $.proxy(this.toggleHighlight, this));
+	this.root.on("mousedown", $.proxy(this, "toggleHighlight"));
 };
 igraph.onClick = function(item) {
 	var self = this.graph;

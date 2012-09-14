@@ -18,7 +18,7 @@ provider.nodeMap = {}; // maps node IDs to the corresponding objects -- XXX: sin
 
 provider.transform = function(concept) {
 	var self = this;
-	var nodes = $.map(concept.relations, $.proxy(self.concept2node, self));
+	var nodes = $.map(concept.relations, $.proxy(self, "concept2node"));
 	nodes.unshift(this.concept2node(concept));
 	nodes = $.map(nodes, function(node) { // filter existing nodes
 		if(self.nodeMap[node.id]) {

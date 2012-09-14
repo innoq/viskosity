@@ -48,7 +48,7 @@ graph.init = function(container, data, settings) {
 	this.graph.nodes(this.store.nodes).links(this.store.edges);
 	this.render();
 
-	this.graph.on("tick", $.proxy(this.onTick, this));
+	this.graph.on("tick", $.proxy(this, "onTick"));
 };
 graph.onTick = function(ev) {
 	var self = this;
