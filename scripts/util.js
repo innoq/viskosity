@@ -65,13 +65,4 @@ ns.pusher = function(arr) {
 	};
 };
 
-// invoke `fn` without the first `count` arguments
-// `count` defaults to 1
-ns.dropArgs = function(fn, count) {
-	return function() {
-		var args = Array.prototype.slice.call(arguments, count || 1);
-		return fn.apply(this, args);
-	};
-};
-
 }(jQuery, VISKOSITY));

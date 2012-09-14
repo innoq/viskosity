@@ -9,15 +9,16 @@ VISKOSITY.graphStore = (function($) {
 
 "use strict";
 
-var drop = VISKOSITY.dropArgs;
-
 var store = {};
 store.init = function(nodes, edges) {
 	this.nodes = nodes || [];
 	this.edges = edges || [];
 
 	this.nodeCache = {};
-	$.each(this.nodes, drop($.proxy(this, "registerNode")));
+	var self = this;
+	$.each(this.nodes, function(i, node) {
+		self.registerNode(node);
+	});
 
 	return this;
 };
