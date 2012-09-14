@@ -10,15 +10,17 @@ var namespaces = {
 	skos: "http://www.w3.org/2004/02/skos/core#"
 };
 
+// mapping of node types to corresponding group
+var nodeTypes = {
+	"skos:Concept": 1,
+	"skos:collection": 2
+};
+
 // mapping of relation types to connection weightings
 var relationTypes = { // TODO: review values
 	"skos:related": 1,
 	"skos:broader": 2,
 	"skos:narrower": 2
-};
-
-var nodeGroups = {
-	concept: 1
 };
 
 var labelTypes = ["skos:prefLabel", "skos:altLabel"]; // sorted by preference
@@ -35,10 +37,12 @@ request.processResponse = function(doc, status, xhr) {
 	var db = $.rdf().load(doc);
 	var store = this.store;
 
-	var concepts = db.where(triple("?concept", "rdf:type", "skos:Concept"));
-	concepts.each(function(i, item) {
-		var id = resourceID(item.concept);
-		store.addNode(id, { group: nodeGroups["concept"] });
+	$.each(nodeTypes, function(type, group) {
+		var resources = db.where(triple("?resource", "rdf:type", type));
+		resources.each(function(i, item) {
+			var id = resourceID(item.resource);
+			store.addNode(id, { group: group });
+		});
 	});
 
 	$.each(relationTypes, function(relType, weight) {
@@ -47,8 +51,8 @@ request.processResponse = function(doc, status, xhr) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
 			store.addEdge(sourceID, targetID);
-			// we know both ends are SKOS concepts
-			var group = nodeGroups["concept"];
+			// inference: both ends are SKOS concepts
+			var group = nodeTypes["concept"];
 			store.updateNode(sourceID, { group: group });
 			store.updateNode(targetID, { group: group });
 		});
@@ -57,7 +61,7 @@ request.processResponse = function(doc, status, xhr) {
 	$.each(labelTypes.reverse(), function(i, labelType) {
 		var labels = db.where(triple("?entity", labelType, "?label"));
 		labels.each(function(i, item) {
-			var id = resourceID(item.entity); // might be concept or collection
+			var id = resourceID(item.entity); // SKOS concept or collection
 			if(!store.getNode(id)) {
 				store.addNode(id);
 			}
