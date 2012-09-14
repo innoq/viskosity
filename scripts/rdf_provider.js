@@ -58,10 +58,10 @@ request.processResponse = function(doc, status, xhr) {
 		var labels = db.where(triple("?entity", labelType, "?label"));
 		labels.each(function(i, item) {
 			var id = resourceID(item.entity); // might be concept or collection
-			var node = store.getNode(id);
-			if(node) {
-				store.updateNode(id, { name: fixLiteral(item.label.value) });
+			if(!store.getNode(id)) {
+				store.addNode(id);
 			}
+			store.updateNode(id, { name: fixLiteral(item.label.value) });
 		});
 	});
 
