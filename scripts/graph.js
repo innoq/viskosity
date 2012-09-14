@@ -21,6 +21,10 @@ var graph = {
 // `container` may be a DOM node, selector or jQuery object
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
 // `settings` is an optional set of key-value pairs for width and height
+// each node is an object with an `id` property and optional properties `name`,
+// `group` and `relations`
+// each edge is an object with `source` and `target` properties, referencing
+// node objects, and an optional property `value`
 graph.init = function(container, data, settings) {
 	settings = settings || {};
 
@@ -40,7 +44,7 @@ graph.init = function(container, data, settings) {
 			linkStrength(this.linkStrength).
 			size([this.width, this.height]);
 
-	// NB: intentionally retaining object identity nodes and links/edges
+	// NB: intentionally retaining object identity for nodes and links/edges
 	this.graph.nodes(this.store.nodes).links(this.store.edges);
 	this.render();
 

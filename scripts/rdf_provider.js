@@ -17,7 +17,7 @@ var relationTypes = { // TODO: review values
 	"skos:narrower": 2
 };
 
-var request = {}; // TODO: rename?
+var request = {};
 request.create = function(uri, store, callback) {
 	var self = Object.create(this);
 	self.store = store;
@@ -38,9 +38,9 @@ request.processResponse = function(doc, status, xhr) {
 	$.each(relationTypes, function(relType, weight) {
 		var relations = db.where(triple("?source", relType, "?target"));
 		relations.each(function(i, item) {
-			var source = resourceID(item.source);
-			var target = resourceID(item.target);
-			self.store.addEdge(source, target);
+			var sourceID = resourceID(item.source);
+			var targetID = resourceID(item.target);
+			self.store.addEdge(sourceID, targetID);
 		});
 	});
 

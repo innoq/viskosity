@@ -22,10 +22,8 @@ Architecture
 
 * `graph.js` provides the basic visualization, based on [D3](http://d3js.org)
 * `igraph.js` extends this module to provide interactive features
-* data retrieval occurs through so-called providers - this adapter mechanism is
+* data retrieval occurs through so-called providers - this adaptor mechanism is
   documented in `sample_provider.js`
-
-cf. [architecture](https://github.com/innoq/viskosity/wiki/architecture)
 
 
 License

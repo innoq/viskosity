@@ -1,6 +1,10 @@
 /*jslint vars: true, white: true */
 /*global jQuery, VISKOSITY */
 
+// keeps track of nodes and edges
+// each node is an object with an `id` property
+// each edge is an object with `source` and `target` properties, referencing
+// node objects
 VISKOSITY.graphStore = (function($) {
 
 "use strict";
