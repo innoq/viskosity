@@ -17,6 +17,8 @@ var relationTypes = { // TODO: review values
 	"skos:narrower": 2
 };
 
+var labelTypes = ["skos:prefLabel", "skos:altLabel"]; // sorted by preference
+
 var request = {};
 request.create = function(uri, store, callback) {
 	var self = Object.create(this);
@@ -41,6 +43,17 @@ request.processResponse = function(doc, status, xhr) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
 			self.store.addEdge(sourceID, targetID);
+		});
+	});
+
+	$.each(labelTypes.reverse(), function(i, labelType) {
+		var labels = db.where(triple("?entity", labelType, "?label"));
+		labels.each(function(i, item) {
+			var id = resourceID(item.entity); // might be concept or collection
+			var node = self.store.getNode(id);
+			if(node) {
+				node.name = fixLiteral(item.label.value); // XXX: breaks encapsulation!?
+			}
 		});
 	});
 
