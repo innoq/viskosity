@@ -1,4 +1,4 @@
-VISKOSITY.sampleProvider({ uri: document.location.hash.substr(1) }, null, function(data) {
+VISKOSITY.sampleProvider({}, null, function(data) {
 	var graph = Object.create(VISKOSITY.igraph);
 	var win = jQuery(window);
 	graph.init("#viz", data, {
