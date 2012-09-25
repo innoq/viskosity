@@ -54,11 +54,17 @@ graph.onTick = function(ev) {
 		q.visit(collide(nodes[i]));
 	}
 
-	this.root.selectAll("line.link").
-			attr("x1", prop("source", "x")).
-			attr("y1", prop("source", "y")).
-			attr("x2", prop("target", "x")).
-			attr("y2", prop("target", "y"));
+	this.root.selectAll("path.link").
+			attr("d", function(item) { // arced
+				var src = item.source,
+					tgt = item.target;
+				var dx = tgt.x - src.x,
+					dy = tgt.y - src.y,
+					dr = Math.sqrt(dx * dx + dy * dy);
+				return "M" + src.x + "," + src.y + "A" + dr + "," + dr +
+						" 0 0,1 " + tgt.x + "," + tgt.y;
+			});
+
 	this.root.selectAll("g.node").attr("transform", function(item) {
 		// bounding box
 		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
@@ -71,7 +77,7 @@ graph.render = function() { // TODO: rename?
 			data(this.graph.links());
 	edges.exit().remove(); // TODO: animate
 	edges.enter().
-			append("line"). // TODO: customizable appearance
+			append("path"). // TODO: customizable appearance
 				attr("class", "edge link").
 				style("stroke-width", function(item) {
 					var value = item.value || 0;
