@@ -67,6 +67,8 @@ request.processResponse = function(doc, status, xhr) {
 		});
 	});
 
+	// TODO: node property `degree`
+
 	this.callback();
 };
 

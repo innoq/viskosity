@@ -36,7 +36,7 @@ var graph = {
 // `data` is the initial data set, an object with arrays for `nodes` and `edges`
 // `settings` is an optional set of key-value pairs for width and height
 // each node is an object with an `id` property and optional properties `name`,
-// `shape`, `group` and `relations`
+// `type` and `degree`
 // each edge is an object with `source` and `target` properties, referencing
 // node objects, and an optional property `value`
 graph.init = function(container, data, settings) {
@@ -118,14 +118,14 @@ graph.render = function() { // TODO: rename?
 	this.graph.start();
 
 	this.root.selectAll("g.node").classed("extensible", function(item) {
-		return item.weight < item.relations;
+		return item.weight < item.degree;
 	});
 };
 graph.shape = function() { // TODO: rename
 	return d3.svg.symbol().
 			type(function(item) { return item.shape || "circle"; }).
 			size(function(item) {
-				var size = (item.relations || 1) * 10 + 100;
+				var size = (item.degree || 1) * 10 + 100;
 				item.size = Math.sqrt(size); // shape size is in px²
 				return size;
 			});
