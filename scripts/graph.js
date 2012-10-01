@@ -81,18 +81,18 @@ graph.onTick = function(ev) {
 		q.visit(collide(nodes[i]));
 	}
 
-	this.root.selectAll("path.link").attr("d", function(item) {
-		var src = item.source,
-			tgt = item.target,
-			fn = PRESENTER.edgePath[item.type];
+	this.root.selectAll("path.link").attr("d", function(edge) {
+		var src = edge.source,
+			tgt = edge.target,
+			fn = PRESENTER.edgePath[edge.type];
 		return fn(src, tgt);
 	});
 
-	this.root.selectAll("g.node").attr("transform", function(item) {
+	this.root.selectAll("g.node").attr("transform", function(node) {
 		// bounding box
-		item.x = Math.max(item.size, Math.min(self.width - item.size, item.x));
-		item.y = Math.max(item.size, Math.min(self.height - item.size, item.y));
-		return "translate(" + item.x + "," + item.y + ")";
+		node.x = Math.max(node.size, Math.min(self.width - node.size, node.x));
+		node.y = Math.max(node.size, Math.min(self.height - node.size, node.y));
+		return "translate(" + node.x + "," + node.y + ")";
 	});
 };
 graph.render = function() { // TODO: rename?
@@ -122,16 +122,16 @@ graph.render = function() { // TODO: rename?
 
 	this.graph.start();
 
-	this.root.selectAll("g.node").classed("extensible", function(item) {
-		return item.weight < item.degree;
+	this.root.selectAll("g.node").classed("extensible", function(node) {
+		return node.weight < node.degree;
 	});
 };
 graph.shape = function() { // TODO: rename
 	return d3.svg.symbol().
-			type(function(item) { return item.shape || "circle"; }).
-			size(function(item) {
-				var size = (item.degree || 1) * 10 + 100;
-				item.size = Math.sqrt(size); // shape size is in px²
+			type(function(node) { return node.shape || "circle"; }).
+			size(function(node) {
+				var size = (node.degree || 1) * 10 + 100;
+				node.size = Math.sqrt(size); // shape size is in px²
 				return size;
 			});
 };
