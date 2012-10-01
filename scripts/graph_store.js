@@ -41,7 +41,7 @@ store.updateNode = function(id, attribs) {
 		throw "invalid node ID";
 	}
 	if(attribs.id && attribs.id !== node.id) {
-		throw "must not update ID";
+		throw "must not modify ID";
 	}
 
 	return $.extend(node, attribs);
@@ -68,7 +68,10 @@ store.addEdge = function(sourceID, targetID, attribs) {
 	// TODO: discard dupes / detect modifications?
 	var edge = { source: source, target: target };
 	if(attribs) {
-		$.extend(edge, attribs) // TODO: guard against `source` and `target` modifications
+		if(attribs.source || attribs.target) {
+			throw "must not modify source or target";
+		}
+		$.extend(edge, attribs);
 	}
 	this.edges.push(edge);
 	return edge;
