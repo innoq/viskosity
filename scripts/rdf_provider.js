@@ -50,7 +50,7 @@ request.processResponse = function(doc, status, xhr) {
 			var targetID = resourceID(item.target);
 			store.addEdge(sourceID, targetID, { type: relCat });
 			// inference: both ends are SKOS concepts
-			var nodeCat = nodeTypes["concept"];
+			var nodeCat = nodeTypes["skos:Concept"];
 			store.updateNode(sourceID, { type: nodeCat });
 			store.updateNode(targetID, { type: nodeCat });
 		});
