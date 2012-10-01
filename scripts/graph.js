@@ -10,6 +10,13 @@ var prop = VISKOSITY.getProp,
 	collide;
 
 var PRESENTER = {}; // TODO: move elsewhere
+PRESENTER.nodeShape = function(node) {
+	var shapes = {}; // TODO: move elsewhere
+	var shape = shapes[node.type] || "circle";
+	var size = (node.degree || 1) * 10 + 100;
+	node.size = Math.sqrt(size); // shape size is in px²
+	return d3.svg.symbol().type(shape).size(size)();
+};
 PRESENTER.nodeColor = (function(fn) {
 	return function(node) {
 		var index = {
@@ -117,7 +124,7 @@ graph.render = function() { // TODO: rename?
 			append("g").attr("class", "node").
 			call(this.graph.drag); // XXX: unnecessary!?
 	newNodes.append("path").
-			attr("d", this.shape()).
+			attr("d", PRESENTER.nodeShape).
 			style("fill", PRESENTER.nodeColor);
 	newNodes.append("a").attr("xlink:href", prop("url")).
 			append("text").text(prop("name"));
@@ -131,15 +138,6 @@ graph.render = function() { // TODO: rename?
 	this.root.selectAll("g.node").classed("extensible", function(node) {
 		return node.weight < node.degree;
 	});
-};
-graph.shape = function() { // TODO: rename
-	return d3.svg.symbol().
-			type(function(node) { return node.shape || "circle"; }).
-			size(function(node) {
-				var size = (node.degree || 1) * 10 + 100;
-				node.size = Math.sqrt(size); // shape size is in px²
-				return size;
-			});
 };
 
 // adapted from http://mbostock.github.com/d3/talk/20110921/collision.html
