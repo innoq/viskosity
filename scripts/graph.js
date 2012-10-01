@@ -9,6 +9,20 @@ var prop = VISKOSITY.getProp,
 	setContext = VISKOSITY.setContext,
 	collide, drawLine, drawArc;
 
+var PRESENTER = {}; // TODO: move elsewhere
+PRESENTER.edgeStrength = function(edge) {
+	var strengths = { // TODO: move elsewhere
+		"default": 0,
+		"broader": 1,
+		"narrower": 1
+	};
+	var strength = strengths[edge.type];
+	if(strength === undefined) {
+		throw "unknown edge type: " + edge.type;
+	}
+	return Math.sqrt(strength * 3);
+};
+
 var graph = {
 	charge: -500,
 	linkDistance: 100,
@@ -83,10 +97,7 @@ graph.render = function() { // TODO: rename?
 	edges.enter().
 			append("path"). // TODO: customizable appearance
 				attr("class", "edge link").
-				style("stroke-width", function(item) {
-					var value = item.value || 0;
-					return Math.sqrt(value * 3);
-				});
+				style("stroke-width", PRESENTER.edgeStrength);
 
 	var nodes = this.root.selectAll("g.node").
 			data(this.graph.nodes(), this.identity);

@@ -12,11 +12,11 @@ var namespaces = {
 
 // mapping of node and relation types to corresponding category
 var nodeTypes = {
-	"skos:Concept": null,
+	"skos:Concept": "default",
 	"skos:Collection": "collection"
 };
 var relationTypes = {
-	"skos:related": null,
+	"skos:related": "default",
 	"skos:broader": "broader",
 	"skos:narrower": "narrower" // XXX: redundant?
 };
@@ -43,16 +43,16 @@ request.processResponse = function(doc, status, xhr) {
 		});
 	});
 
-	$.each(relationTypes, function(relType, weight) {
+	$.each(relationTypes, function(relType, relCat) {
 		var relations = db.where(triple("?source", relType, "?target"));
 		relations.each(function(i, item) {
 			var sourceID = resourceID(item.source);
 			var targetID = resourceID(item.target);
-			store.addEdge(sourceID, targetID, { value: weight });
+			store.addEdge(sourceID, targetID, { type: relCat });
 			// inference: both ends are SKOS concepts
-			var category = nodeTypes["concept"];
-			store.updateNode(sourceID, { type: category });
-			store.updateNode(targetID, { type: category });
+			var nodeCat = nodeTypes["concept"];
+			store.updateNode(sourceID, { type: nodeCat });
+			store.updateNode(targetID, { type: nodeCat });
 		});
 	});
 
