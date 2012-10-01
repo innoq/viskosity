@@ -7,14 +7,19 @@ VISKOSITY.graph = (function($) {
 
 var prop = VISKOSITY.getProp,
 	setContext = VISKOSITY.setContext,
-	collide, drawLine, drawArc;
+	collide;
 
 var PRESENTER = {}; // TODO: move elsewhere
+PRESENTER.edgePath = {
+	"default": drawLine,
+	broader: drawArc,
+	narrower: drawArc
+};
 PRESENTER.edgeStrength = function(edge) {
 	var strengths = { // TODO: move elsewhere
 		"default": 0,
-		"broader": 1,
-		"narrower": 1
+		broader: 2,
+		narrower: 1
 	};
 	var strength = strengths[edge.type];
 	if(strength === undefined) {
@@ -79,7 +84,7 @@ graph.onTick = function(ev) {
 	this.root.selectAll("path.link").attr("d", function(item) {
 		var src = item.source,
 			tgt = item.target,
-			fn = item.arced ? drawArc : drawLine; // XXX: `arced` undocumented, presentational
+			fn = PRESENTER.edgePath[item.type];
 		return fn(src, tgt);
 	});
 
@@ -156,16 +161,16 @@ collide = function(node) {
 	};
 };
 
-drawLine = function(src, tgt) {
+function drawLine(src, tgt) {
 	return "M" + src.x + "," + src.y + "L" + tgt.x + "," + tgt.y;
-};
-drawArc = function(src, tgt) {
+}
+function drawArc(src, tgt) {
 	var dx = tgt.x - src.x,
 		dy = tgt.y - src.y,
 		dr = Math.sqrt(dx * dx + dy * dy);
 	return "M" + src.x + "," + src.y + "A" + dr + "," + dr +
 			" 0 0,1 " + tgt.x + "," + tgt.y;
-};
+}
 
 return graph;
 
