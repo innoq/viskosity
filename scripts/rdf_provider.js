@@ -10,17 +10,15 @@ var namespaces = {
 	skos: "http://www.w3.org/2004/02/skos/core#"
 };
 
-// mapping of node types to corresponding group
+// mapping of node and relation types to corresponding category
 var nodeTypes = {
-	"skos:Concept": 1,
-	"skos:collection": 2
+	"skos:Concept": null,
+	"skos:Collection": "collection"
 };
-
-// mapping of relation types to connection weightings
-var relationTypes = { // TODO: review values
-	"skos:related": 1,
-	"skos:broader": 2,
-	"skos:narrower": 2
+var relationTypes = {
+	"skos:related": null,
+	"skos:broader": "broader",
+	"skos:narrower": "narrower" // XXX: redundant?
 };
 
 var labelTypes = ["skos:prefLabel", "skos:altLabel"]; // sorted by preference
@@ -37,11 +35,11 @@ request.processResponse = function(doc, status, xhr) {
 	var db = $.rdf().load(doc);
 	var store = this.store;
 
-	$.each(nodeTypes, function(type, group) {
+	$.each(nodeTypes, function(type, category) {
 		var resources = db.where(triple("?resource", "rdf:type", type));
 		resources.each(function(i, item) {
 			var id = resourceID(item.resource);
-			store.addNode(id, { group: group });
+			store.addNode(id, { type: category });
 		});
 	});
 
@@ -52,9 +50,9 @@ request.processResponse = function(doc, status, xhr) {
 			var targetID = resourceID(item.target);
 			store.addEdge(sourceID, targetID, { value: weight });
 			// inference: both ends are SKOS concepts
-			var group = nodeTypes["concept"];
-			store.updateNode(sourceID, { group: group });
-			store.updateNode(targetID, { group: group });
+			var category = nodeTypes["concept"];
+			store.updateNode(sourceID, { type: category });
+			store.updateNode(targetID, { type: category });
 		});
 	});
 
