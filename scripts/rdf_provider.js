@@ -61,7 +61,7 @@ request.processResponse = function(doc, status, xhr) {
 		labels.each(function(i, item) {
 			var id = resourceID(item.entity); // SKOS concept or collection
 			if(!store.getNode(id)) {
-				store.addNode(id);
+				store.addNode(id, { type: "unknown" }); // XXX: special-casing
 			}
 			store.updateNode(id, { name: fixLiteral(item.label.value) });
 		});

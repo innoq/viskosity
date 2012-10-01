@@ -10,6 +10,15 @@ var prop = VISKOSITY.getProp,
 	collide;
 
 var PRESENTER = {}; // TODO: move elsewhere
+PRESENTER.nodeColor = (function(fn) {
+	return function(node) {
+		var index = {
+			"unknown": 0,
+			"collection": 2
+		}[node.type] || 1;
+		return fn(index);
+	};
+}(d3.scale.category20()));
 PRESENTER.edgePath = {
 	"default": drawLine,
 	broader: drawArc,
@@ -32,9 +41,6 @@ var graph = {
 	charge: -500,
 	linkDistance: 100,
 	linkStrength: 0.5,
-	colorize: (function(fn) { // TODO: rename
-		return function(item) { return fn(item.group || 0); };
-	}(d3.scale.category20())), // XXX: bad default?
 	identity: prop("id")
 };
 // `container` may be a DOM node, selector or jQuery object
@@ -112,7 +118,7 @@ graph.render = function() { // TODO: rename?
 			call(this.graph.drag); // XXX: unnecessary!?
 	newNodes.append("path").
 			attr("d", this.shape()).
-			style("fill", this.colorize);
+			style("fill", PRESENTER.nodeColor);
 	newNodes.append("a").attr("xlink:href", prop("url")).
 			append("text").text(prop("name"));
 	nodes.select("text").text(prop("name")); // update existing nodes
