@@ -26,6 +26,7 @@ graph.init = function(container, data, settings) {
 
 	// XXX: unnecessary jQuery dependency?
 	container = container.jquery ? container : $(container);
+	container.addClass("viz");
 	this.width = settings.width || container.width();
 	this.height = settings.height || container.height();
 
