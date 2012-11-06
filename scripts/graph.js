@@ -82,8 +82,6 @@ graph.init = function(container, data, settings) {
 	this.graph.on("tick", $.proxy(this, "onTick"));
 };
 graph.onTick = function(ev) {
-	var self = this;
-
 	// collision detection
 	var nodes = this.graph.nodes();
 	var q = d3.geom.quadtree(nodes);
@@ -101,9 +99,6 @@ graph.onTick = function(ev) {
 	});
 
 	this.root.selectAll("g.node").attr("transform", function(node) {
-		// bounding box
-		node.x = Math.max(node.size, Math.min(self.width - node.size, node.x));
-		node.y = Math.max(node.size, Math.min(self.height - node.size, node.y));
 		return "translate(" + node.x + "," + node.y + ")";
 	});
 };
