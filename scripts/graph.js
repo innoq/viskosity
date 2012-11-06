@@ -63,7 +63,6 @@ graph.init = function(container, data, settings) {
 	this.store = Object.create(VISKOSITY.graphStore);
 	this.store.init(data.nodes, data.edges);
 
-	// XXX: unnecessary jQuery dependency?
 	container = container.jquery ? container : $(container);
 	container.addClass("viz");
 	this.width = settings.width || container.width();
@@ -79,7 +78,6 @@ graph.init = function(container, data, settings) {
 
 	// NB: intentionally retaining object identity for nodes and links/edges
 	this.graph.nodes(this.store.nodes).links(this.store.edges);
-	this.render();
 
 	this.graph.on("tick", $.proxy(this, "onTick"));
 };
@@ -136,7 +134,7 @@ graph.render = function() { // TODO: rename?
 
 	this.graph.start();
 
-	this.root.selectAll("g.node").classed("extensible", function(node) {
+	this.root.selectAll("g.node").classed("extensible", function(node) { // XXX: obsolete? undocumented!
 		return node.weight < node.degree;
 	});
 };
@@ -169,6 +167,7 @@ collide = function(node) {
 function drawLine(src, tgt) {
 	return "M" + src.x + "," + src.y + "L" + tgt.x + "," + tgt.y;
 }
+
 function drawArc(src, tgt) {
 	var dx = tgt.x - src.x,
 		dy = tgt.y - src.y,
