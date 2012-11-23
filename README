@@ -14,7 +14,7 @@ Dependencies
 
 * [jQuery](http://jquery.com) (MIT)
 * [D3](http://d3js.org) (BSD)
-* [rdfQuery](http://code.google.com/p/rdfquery/) (MIT)
+* [rdfQuery](http://code.google.com/p/rdfquery/) (MIT) - only for RDF Provider
 
 
 Architecture

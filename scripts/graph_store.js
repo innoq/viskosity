@@ -26,7 +26,9 @@ store.getNode = function(id) {
 	return this.nodeCache[id];
 };
 store.addNode = function(id, attribs) {
-	// TODO: validate ID
+	if(!id.substr) {
+		throw "ID must be a string";
+	}
 	var node = { id: id };
 	var isNew = this.registerNode(node) && this.nodes.push(node);
 	if(isNew && attribs) { // XXX: undesirable?

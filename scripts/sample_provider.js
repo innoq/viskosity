@@ -36,7 +36,7 @@ function generateEdge(source, target, value) {
 
 // `node` is the point of origin, usually after the user has clicked a node to extend it
 // `store` is a graphStore instance representing the current data set
-// `callback` expects a similar object with new nodes and edges
+// `callback` signals the completion of the request handling
 return function(node, store, callback) {
 	var i;
 
