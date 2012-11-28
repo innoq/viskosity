@@ -5,8 +5,9 @@
 
 "use strict";
 
-var provider = VISKOSITY.rdfProvider;
-var uri = document.location.hash.substr(1);
+var endpoint = "http://store.led.innoq.com/demo";
+var provider = VISKOSITY.sparqlProvider(endpoint);
+var uri = "http://localhost.localdomain:3000/model_building";
 
 var graph = Object.create(VISKOSITY.igraph);
 var win = $(window);
