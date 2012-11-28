@@ -11,8 +11,11 @@ var prop = VISKOSITY.getProp,
 
 var PRESENTER = {}; // TODO: move elsewhere
 PRESENTER.nodeShape = function(node) {
-	var shapes = {}; // TODO: move elsewhere
-	var shape = shapes[node.type] || "circle";
+	var shapes = { // TODO: move elsewhere -- TODO: document
+		collection: "diamond",
+		"default": "circle"
+	};
+	var shape = shapes[node.type] || shapes["default"];
 	var size = (node.degree || 1) * 10 + 100;
 	node.size = Math.sqrt(size); // shape size is in px²
 	return d3.svg.symbol().type(shape).size(size)();
@@ -27,20 +30,14 @@ PRESENTER.nodeColor = (function(fn) {
 	};
 }(d3.scale.category20()));
 PRESENTER.edgePath = {
-	"default": drawLine,
-	broader: drawArc,
-	narrower: drawArc
+	directed: drawArc,
+	"default": drawLine
 };
 PRESENTER.edgeStrength = function(edge) {
 	var strengths = { // TODO: move elsewhere
-		"default": 0,
-		broader: 2,
-		narrower: 1
+		"default": 1
 	};
-	var strength = strengths[edge.type];
-	if(strength === undefined) {
-		throw "unknown edge type: " + edge.type;
-	}
+	var strength = strengths[edge.type] || strengths["default"];
 	return Math.sqrt(strength * 3);
 };
 
@@ -94,7 +91,7 @@ graph.onTick = function(ev) {
 	this.root.selectAll("path.link").attr("d", function(edge) {
 		var src = edge.source,
 			tgt = edge.target,
-			fn = PRESENTER.edgePath[edge.type];
+			fn = PRESENTER.edgePath[edge.type] || PRESENTER.edgePath["default"];
 		return fn(src, tgt);
 	});
 
