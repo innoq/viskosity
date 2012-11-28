@@ -20,7 +20,7 @@ request.create = function(endpoint, resource, store, callback) {
 	return self;
 };
 request.query = function() {
-	var sparql = "SELECT DISTINCT ?prd ?obj ?otype WHERE { " +
+	var sparql = "SELECT DISTINCT ?prd ?obj WHERE { " +
 			"<" + this.subject + "> ?prd ?obj . }";
 	$.ajax({
 		type: "POST",
@@ -42,25 +42,16 @@ request.processResponse = function(data, status, xhr) {
 request.translate = function(results) {
 	var self = this;
 	$.each(results, function(i, result) {
-		console.log($.map(["prd", "obj"], function(prop) {
-			var type = result[prop].type;
-			var val = result[prop].value;
-			if(type === "uri") {
-				return val.replace(rdf, "rdf:").replace(skos, "skos:");
-			} else {
-				return "[" + type + "]" + val;
-			}
-		}).join(" ")); // XXX: DEBUG
 		self.processResult(result);
 	});
 };
-request.processResult = function(result) {
+request.processResult = function(result) { // TODO: move into translator layer
 	this.store.getNode(this.subject);
 	var rel = result.prd.value; // always a URI
 	var obj = result.obj;
 
 	// node type
-	var types = { // TODO: move into translator layer -- TODO: use known namespace prefixes
+	var types = { // TODO: use known namespace prefixes
 		"http://www.w3.org/2004/02/skos/core#Concept": "entity",
 		"http://www.w3.org/2004/02/skos/core#Collection": "collection"
 	};
@@ -78,10 +69,22 @@ request.processResult = function(result) {
 	}
 
 	// relations
-	if(rel === skos + "semanticRelation") { // XXX: ontology-specific
+	if(rel === skos + "narrower" || rel === skos + "broader" ||
+			rel === skos + "related") { // XXX: ontology-specific
 		var object = obj.value;
 		this.store.addNode(object);
-		this.store.addEdge(this.subject, object);
+		var source = this.subject;
+		var target = object;
+		var attrs;
+		if(rel === skos + "broader") {
+			attrs = { type: "directed" };
+		} else if(rel === skos + "narrower") {
+			attrs = { type: "directed" };
+			var _source = source;
+			source = target;
+			target = _source;
+		}
+		this.store.addEdge(source, target, attrs);
 	}
 };
 

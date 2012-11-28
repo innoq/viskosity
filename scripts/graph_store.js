@@ -31,10 +31,10 @@ store.addNode = function(id, attribs) {
 	}
 	var node = { id: id };
 	var isNew = this.registerNode(node) && this.nodes.push(node);
-	if(isNew && attribs) { // XXX: undesirable?
+	if(isNew && attribs) { // XXX: `isNew` condition provokes silent failures
 		this.updateNode(id, attribs);
 	}
-	return isNew;
+	return isNew && node;
 };
 store.updateNode = function(id, attribs) {
 	var node = this.getNode(id);
