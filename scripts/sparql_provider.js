@@ -60,16 +60,15 @@ request.processResult = function(result) { // TODO: move into translator layer
 		if(type) {
 			this.store.updateNode(this.subject, { type: type });
 		}
-		return;
 	}
 
 	// captions
-	if(rel === rdfs + "label") { // TODO: precedence (e.g. language, skos:prefLabel vs. skos:altLabel)
+	else if(rel === rdfs + "label") { // TODO: precedence (e.g. language, skos:prefLabel vs. skos:altLabel)
 		this.store.updateNode(this.subject, { name: obj.value });
 	}
 
 	// relations
-	if(rel === skos + "narrower" || rel === skos + "broader" ||
+	else if(rel === skos + "narrower" || rel === skos + "broader" ||
 			rel === skos + "related") { // XXX: ontology-specific
 		var object = obj.value;
 		this.store.addNode(object);
