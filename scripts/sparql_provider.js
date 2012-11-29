@@ -20,8 +20,12 @@ request.create = function(endpoint, resource, store, callback) {
 	return self;
 };
 request.query = function() {
-	var sparql = "SELECT DISTINCT ?prd ?obj WHERE { " +
-			"<" + this.subject + "> ?prd ?obj . }";
+	var sparql = "SELECT DISTINCT ?prd ?obj ?otype ?olabel WHERE {\n" +
+			"<" + this.subject + "> ?prd ?obj .\n" +
+			"OPTIONAL {\n" +
+			"?labelClass <" + rdfs + "subPropertyOf> <" + rdfs + "label> .\n" +
+			"?obj ?labelClass ?olabel .\n" +
+			"}\n}";
 	$.ajax({
 		type: "POST",
 		url: this.endpoint,
@@ -45,6 +49,7 @@ request.translate = function(results) {
 		self.processResult(result);
 	});
 };
+request.olabelMap = {}; // XXX: does not belong here / should not be necessary
 request.processResult = function(result) { // TODO: move into translator layer
 	this.store.getNode(this.subject);
 	var rel = result.prd.value; // always a URI
@@ -72,6 +77,7 @@ request.processResult = function(result) { // TODO: move into translator layer
 			rel === skos + "related") { // XXX: ontology-specific
 		var object = obj.value;
 		this.store.addNode(object);
+
 		var source = this.subject;
 		var target = object;
 		var attrs;
@@ -84,6 +90,25 @@ request.processResult = function(result) { // TODO: move into translator layer
 			target = _source;
 		}
 		this.store.addEdge(source, target, attrs);
+
+		// XXX: duplicates caption processing
+		var objectLabel = this.olabelMap[object];
+		if(objectLabel) {
+			this.store.updateNode(object, { name: objectLabel });
+		}
+	}
+
+	// object labels -- XXX: largely duplicates caption processing
+	else if(result.olabel) {
+		var object = obj.value;
+		var registered = this.store.getNode(object);
+		var olabel = result.olabel.value;
+		// TODO: precedence (cf. caption processing)
+		if(registered) {
+			this.store.updateNode(object, { name: olabel });
+		} else {
+			this.olabelMap[object] = olabel;
+		}
 	}
 };
 
