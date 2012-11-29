@@ -11,26 +11,26 @@ var prop = VISKOSITY.getProp,
 
 var PRESENTER = {}; // TODO: move elsewhere
 PRESENTER.nodeShape = function(node) {
-	var shapes = { // TODO: move elsewhere -- TODO: document
+	var shapes = { // TODO: move elsewhere
 		collection: "diamond",
 		"default": "circle"
 	};
-	var shape = shapes[node.type] || shapes["default"];
-	var size = (node.degree || 1) * 10 + 100;
+	var shape = shapes[node.type] || shapes["default"]; // TODO: document
+	var size = (node.degree || 1) * 10 + 100; // XXX: obsolete? undocumented!
 	node.size = Math.sqrt(size); // shape size is in px²
 	return d3.svg.symbol().type(shape).size(size)();
 };
 PRESENTER.nodeColor = (function(fn) {
 	return function(node) {
-		var colorIndexes = {
+		var colorIndexes = { // TODO: move elsewhere
 			collection: 2,
 			"default": 1
 		}
-		return fn(colorIndexes[node.type] || colorIndexes["default"]);
+		return fn(colorIndexes[node.type] || colorIndexes["default"]); // TODO: document
 	};
 }(d3.scale.category20()));
 PRESENTER.edgeClass = function(edge) {
-	return "edge link " + (edge.type === "directed" ? "directed" : "undirected");
+	return "edge link " + (edge.type === "directed" ? "directed" : "undirected"); // TODO: document
 };
 PRESENTER.edgePath = {
 	directed: drawArc,
@@ -40,7 +40,7 @@ PRESENTER.edgeStrength = function(edge) {
 	var strengths = { // TODO: move elsewhere
 		"default": 1
 	};
-	var strength = strengths[edge.type] || strengths["default"];
+	var strength = strengths[edge.type] || strengths["default"]; // TODO: document
 	return Math.sqrt(strength * 3);
 };
 

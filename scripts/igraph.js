@@ -19,7 +19,7 @@ igraph.init = function() {
 	this.provider = settings.provider;
 	this.root.on("mousedown", $.proxy(this, "toggleHighlight"));
 	this.root = this.root.
-			call(d3.behavior.zoom().scaleExtent([1, 8]).
+			call(d3.behavior.zoom().scaleExtent([0.5, 8]).
 					on("zoom", $.proxy(this, "onZoom"))).
 			append("g"); // required for zoom context
 };
