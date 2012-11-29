@@ -7,7 +7,8 @@
 
 var endpoint = "http://store.led.innoq.com/demo";
 var provider = VISKOSITY.sparqlProvider(endpoint);
-var uri = "http://localhost.localdomain:3000/model_building";
+var resource = document.location.hash.substr(1);
+var uri = "http://localhost.localdomain:3000/" + resource;
 
 var graph = Object.create(VISKOSITY.igraph);
 var win = $(window);
