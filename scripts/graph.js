@@ -22,11 +22,11 @@ PRESENTER.nodeShape = function(node) {
 };
 PRESENTER.nodeColor = (function(fn) {
 	return function(node) {
-		var index = {
-			"unknown": 0,
-			"collection": 2
-		}[node.type] || 1;
-		return fn(index);
+		var colorIndexes = {
+			collection: 2,
+			"default": 1
+		}
+		return fn(colorIndexes[node.type] || colorIndexes["default"]);
 	};
 }(d3.scale.category20()));
 PRESENTER.edgeClass = function(edge) {
