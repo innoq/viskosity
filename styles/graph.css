@@ -16,6 +16,10 @@
 	stroke-opacity: 0.25;
 }
 
+.viz .undirected {
+	stroke-dasharray: 0,2 1;
+}
+
 .viz .extensible path {
 	stroke: #FFD700;
 	cursor: pointer;

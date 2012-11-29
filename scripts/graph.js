@@ -29,6 +29,9 @@ PRESENTER.nodeColor = (function(fn) {
 		return fn(index);
 	};
 }(d3.scale.category20()));
+PRESENTER.edgeClass = function(edge) {
+	return "edge link " + (edge.type === "directed" ? "directed" : "undirected");
+};
 PRESENTER.edgePath = {
 	directed: drawArc,
 	"default": drawLine
@@ -104,8 +107,8 @@ graph.render = function() { // TODO: rename?
 			data(this.graph.links());
 	edges.exit().remove(); // TODO: animate
 	edges.enter().
-			append("path"). // TODO: customizable appearance
-				attr("class", "edge link").
+			append("path").
+				attr("class", PRESENTER.edgeClass).
 				style("stroke-width", PRESENTER.edgeStrength);
 
 	var nodes = this.root.selectAll("g.node").
