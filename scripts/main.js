@@ -8,7 +8,19 @@
 var endpoint = "http://store.led.innoq.com/demo";
 var provider = VISKOSITY.sparqlProvider(endpoint);
 var resource = document.location.hash.substr(1);
-var uri = "http://localhost.localdomain:3000/" + resource;
+
+// XXX: DEBUG
+var presets = {
+	"Model building": "http://localhost.localdomain:3000/model_building",
+	"Achievement hobbies": "http://localhost.localdomain:3000/achievement_hobbies",
+	"Bundesrepublik Deutschland": "http://localhost:8080/umt/_00100129"
+};
+var links = $.map(presets, function(uri, label) {
+	var link = $("<a />").text(label).
+			attr("href", document.location.toString().split("#")[0] + "#" + uri);
+	return $("<li />").append(link);
+});
+$("<ul />").append(links).prependTo(document.body);
 
 var graph = Object.create(VISKOSITY.igraph);
 var win = $(window);
@@ -18,6 +30,6 @@ graph.init("#viz", {}, {
 	provider: provider
 });
 
-provider({ id: uri }, graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
+provider({ id: resource }, graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
 
 }(jQuery));
