@@ -57,7 +57,6 @@ request.processResult = function(result) { // TODO: move into translator layer
 
 	// node type
 	var types = { // TODO: use known namespace prefixes
-		"http://www.w3.org/2004/02/skos/core#Concept": "entity",
 		"http://www.w3.org/2004/02/skos/core#Collection": "collection"
 	};
 	if(rel === rdf + "type") {
