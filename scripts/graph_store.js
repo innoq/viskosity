@@ -60,15 +60,15 @@ store.registerNode = function(node) {
 	return true;
 };
 store.addEdge = function(sourceID, targetID, attribs) {
-	this.addNode(sourceID);
-	this.addNode(targetID);
-	var source = this.getNode(sourceID);
-	var target = this.getNode(targetID);
-	if(!source || !target) {
-		throw "invalid endpoint";
+	var isNew = this.registerEdge(sourceID, targetID);
+	if(!isNew) {
+		return false;
 	}
-	// TODO: discard dupes / detect modifications?
-	var edge = { source: source, target: target };
+
+	var edge = {
+		source: this.getNode(sourceID),
+		target: this.getNode(targetID)
+	};
 	if(attribs) {
 		if(attribs.source || attribs.target) {
 			throw "must not modify source or target";
@@ -77,6 +77,26 @@ store.addEdge = function(sourceID, targetID, attribs) {
 	}
 	this.edges.push(edge);
 	return edge;
+};
+store.registerEdge = function(sourceID, targetID) {
+	if(!sourceID.substr || !targetID.substr) {
+		throw "IDs must be strings";
+	}
+
+	var cache = this.cache.edges;
+	// ensure only a single edge exists between two nodes -- XXX: does not allow for multiple edge types
+	if((cache[sourceID] || []).indexOf(targetID) !== -1 ||
+			(cache[targetID] || []).indexOf(sourceID) !== -1) { // XXX: reverse direction; undesirable limitation?
+		return false;
+	}
+
+	this.addNode(sourceID);
+	this.addNode(targetID);
+	if(!cache[sourceID]) {
+		cache[sourceID] = [];
+	}
+	cache[sourceID].push(targetID);
+	return true;
 };
 
 return store;
