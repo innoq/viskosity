@@ -14,7 +14,7 @@ store.init = function(nodes, edges) {
 	this.nodes = nodes || [];
 	this.edges = edges || [];
 
-	this.nodeCache = {};
+	this.cache = { nodes: {}, edges: {} };
 	var self = this;
 	$.each(this.nodes, function(i, node) {
 		self.registerNode(node);
@@ -23,12 +23,9 @@ store.init = function(nodes, edges) {
 	return this;
 };
 store.getNode = function(id) {
-	return this.nodeCache[id];
+	return this.cache.nodes[id];
 };
 store.addNode = function(id, attribs) {
-	if(!id.substr) {
-		throw "ID must be a string";
-	}
 	var node = { id: id };
 	var isNew = this.registerNode(node) && this.nodes.push(node);
 	if(isNew && attribs) { // XXX: `isNew` condition provokes silent failures
@@ -52,11 +49,14 @@ store.registerNode = function(node) {
 	if(!node.id) {
 		throw "node lacks ID";
 	}
-	if(this.nodeCache[node.id]) {
+	if(!node.id.substr) {
+		throw "ID must be a string";
+	}
+	if(this.cache.nodes[node.id]) {
 		return false;
 	}
 
-	this.nodeCache[node.id] = node;
+	this.cache.nodes[node.id] = node;
 	return true;
 };
 store.addEdge = function(sourceID, targetID, attribs) {
