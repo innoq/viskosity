@@ -30,6 +30,10 @@ graph.init("#viz", {}, {
 	provider: provider
 });
 
+window.onhashchange = function() {
+	document.location.reload(); // XXX: crude
+};
+
 provider({ id: resource }, graph.store, $.proxy(graph, "render")); // XXX: should be encapsulated in `graph`
 
 }(jQuery));
