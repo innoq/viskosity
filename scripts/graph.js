@@ -46,8 +46,12 @@ PRESENTER.edgeStrength = function(edge) {
 
 var graph = {
 	charge: -500,
-	linkDistance: 100,
-	linkStrength: 0.5,
+	linkDistance: function(edge) {
+		return edge.type === "directed" ? 100 : 200; // TODO: document
+	},
+	linkStrength: function(edge) {
+		return edge.type === "directed" ? 0.5 : 0.25; // TODO: document
+	},
 	identity: prop("id")
 };
 // `container` may be a DOM node, selector or jQuery object
