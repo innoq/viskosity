@@ -47,7 +47,7 @@ PRESENTER.edgeStrength = function(edge) {
 var graph = {
 	charge: -500,
 	linkDistance: function(edge) {
-		return edge.type === "directed" ? 100 : 200; // TODO: document
+		return (edge.type === "directed" ? 100 : 200) + edge.source.weight; // XXX: weight adjustment insufficient? -- TODO: document
 	},
 	linkStrength: function(edge) {
 		return edge.type === "directed" ? 0.5 : 0.25; // TODO: document
