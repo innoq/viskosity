@@ -25,6 +25,7 @@ igraph.init = function() {
 };
 igraph.onClick = function(item) {
 	var self = this.graph;
+	self.indicator.classed("hidden", false);
 	self.toggleHighlight(this.context);
 	var data = { nodes: self.graph.nodes(), edges: self.graph.links() };
 	self.provider(item, self.store, $.proxy(self, "render"));

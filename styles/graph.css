@@ -4,6 +4,10 @@
 	border: 1px solid #AAA;
 }
 
+.viz .hidden {
+	display: none;
+}
+
 .viz .node path {
 	stroke: #AAA;
 	stroke-width: 1;

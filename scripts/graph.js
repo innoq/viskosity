@@ -84,6 +84,10 @@ graph.init = function(container, data, settings) {
 	this.graph.nodes(this.store.nodes).links(this.store.edges);
 
 	this.graph.on("tick", $.proxy(this, "onTick"));
+
+	this.indicator = this.root.append("text").text("loading…").
+		attr("x", this.width / 2).attr("y", this.height / 2).
+		attr("dy", ".35em").attr("text-anchor", "middle");
 };
 graph.onTick = function(ev) {
 	// collision detection
@@ -107,6 +111,7 @@ graph.onTick = function(ev) {
 	});
 };
 graph.render = function() { // TODO: rename?
+	this.indicator.classed("hidden", true);
 	var edges = this.root.selectAll("line.link").
 			data(this.graph.links());
 	edges.exit().remove(); // TODO: animate
