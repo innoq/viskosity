@@ -33,15 +33,6 @@ igraph.onClick = function(item) {
 igraph.onHover = function(item) {
 	var hovering = d3.event.type === "mouseover";
 	var el = d3.select(this).classed("hover", hovering);
-
-	var transform = el.attr("transform");
-	var scale = "scale(2)";
-	if(hovering) {
-		transform += "scale(2)";
-	} else {
-		transform = transform.replace(scale, "");
-	}
-	el.attr("transform", transform);
 };
 igraph.onZoom = function() {
 	var ev = d3.event;
