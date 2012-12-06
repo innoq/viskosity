@@ -30,6 +30,19 @@ igraph.onClick = function(item) {
 	var data = { nodes: self.graph.nodes(), edges: self.graph.links() };
 	self.provider(item, self.store, $.proxy(self, "render"));
 };
+igraph.onHover = function(item) {
+	var hovering = d3.event.type === "mouseover";
+	var el = d3.select(this).classed("hover", hovering);
+
+	var transform = el.attr("transform");
+	var scale = "scale(2)";
+	if(hovering) {
+		transform += "scale(2)";
+	} else {
+		transform = transform.replace(scale, "");
+	}
+	el.attr("transform", transform);
+};
 igraph.onZoom = function() {
 	var ev = d3.event;
 	this.root.attr("transform",

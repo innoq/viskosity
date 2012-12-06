@@ -25,7 +25,7 @@ PRESENTER.nodeColor = (function(fn) {
 		var colorIndexes = { // TODO: move elsewhere
 			collection: 2,
 			"default": 1
-		}
+		};
 		return fn(colorIndexes[node.type] || colorIndexes["default"]); // TODO: document
 	};
 }(d3.scale.category20()));
@@ -134,6 +134,9 @@ graph.render = function() { // TODO: rename?
 	nodes.select("text").text(prop("name")); // update existing nodes
 	if(this.onClick) {
 		newNodes.on("click", setContext(this.onClick, { graph: this }));
+	}
+	if(this.onHover) {
+		newNodes.on("mouseover", this.onHover).on("mouseout", this.onHover);
 	}
 
 	this.graph.start();
