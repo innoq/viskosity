@@ -3,7 +3,7 @@
 jquery_version = 1.8
 
 download = \
-	curl --output $(1) --time-cond $(1) --remote-time $(2)
+	curl --output $(1) --time-cond $(1) --remote-time $(2); echo
 
 dependencies:
 	mkdir -p lib

@@ -112,7 +112,8 @@ graph.onTick = function(ev) {
 };
 graph.render = function() { // TODO: rename?
 	this.indicator.classed("hidden", true);
-	var edges = this.root.selectAll("line.link").
+
+	var edges = this.root.selectAll("path.link").
 			data(this.graph.links());
 	edges.exit().remove(); // TODO: animate
 	edges.enter().
