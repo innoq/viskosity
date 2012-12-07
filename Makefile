@@ -9,6 +9,8 @@ dependencies:
 	mkdir -p lib
 	$(call download, "lib/jquery.js", \
 		"http://ajax.googleapis.com/ajax/libs/jquery/$(jquery_version)/jquery.min.js")
-	$(call download, "lib/d3.js", "http://d3js.org/d3.v2.min.js")
+	$(call download, "lib/d3.js", "http://d3js.org/d3.v2.js")
+	$(call download, "lib/d3_fisheye.js", \
+		"https://raw.github.com/d3/d3-plugins/master/fisheye/fisheye.js")
 	$(call download, "lib/rdfquery-core.js", \
 		"http://rdfquery.googlecode.com/files/jquery.rdfquery.core.min-1.0.js")
