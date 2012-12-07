@@ -6,8 +6,7 @@ VISKOSITY.igraph = (function($) {
 
 "use strict";
 
-var base = VISKOSITY.graph,
-	pusher = VISKOSITY.pusher;
+var base = VISKOSITY.graph;
 
 var igraph = Object.create(base);
 // `settings.provider` is a function which is used to retrieve additional data -

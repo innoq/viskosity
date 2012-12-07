@@ -59,7 +59,7 @@ ns.getProp = function() { // TODO: memoize
 
 // convenience wrapper for jQuery#each callbacks
 // returns a function which appends the given item to the specified array
-ns.pusher = function(arr) {
+ns.pusher = function(arr) { // XXX: obsolete?
 	return function(i, item) {
 		arr.push(item);
 	};
