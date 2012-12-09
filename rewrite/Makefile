@@ -6,8 +6,8 @@ download = \
 	curl --output $(1) --time-cond $(1) --remote-time $(2); echo
 
 test:
-	phantomjs lib/phantomjs-qunit-runner.js test/index.html || \
-			echo -e '\033[31mfailing tests\033[0m'
+	phantomjs lib/phantomjs-qunit-runner.js test/index.html | \
+			 sed "s/[^0 ][^0 ]* failed/\x1b[31m&\x1b[0m/"
 
 dependencies:
 	mkdir -p lib
