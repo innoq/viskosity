@@ -1,6 +1,12 @@
 ns = this.VISKOSITY
 
-module "RDF store"
+module "RDF store", {
+	setup: () ->
+		@namespaces = ns.namespaces
+		ns.namespaces = {}
+	teardown: () ->
+		ns.namespaces = @namespaces
+}
 
 test "adding and retrieving triples", ->
 	store = new ns.RDFStore
@@ -8,15 +14,15 @@ test "adding and retrieving triples", ->
 	triple =
 		sbj: { type: "uri", value: "http://example.org/foo" }
 		prd: { type: "uri", value: "http://rdf.org/type" }
-		obj: { type: "uri", value: "http://skos.org/Concept" }
+		obj: { type: "uri", value: "http://skos.org#Concept" }
 	store.add(triple)
 
 	strictEqual store.query("http://example.org/foo")["http://rdf.org/type"][0].
-			value, "http://skos.org/Concept"
+			value, "http://skos.org#Concept"
 	strictEqual store.query("http://example.org/foo", "http://rdf.org/type")[0].
-			value, "http://skos.org/Concept"
+			value, "http://skos.org#Concept"
 	strictEqual store.query("http://example.org/foo",
-			"http://skos.org/related"), null
+			"http://skos.org#related"), null
 	strictEqual store.query("http://example.org/bar"), null
 	strictEqual store.query("http://example.org/bar", "http://rdf.org/type"),
 			null
@@ -29,37 +35,66 @@ test "adding and retrieving triples", ->
 
 	results = store.query("http://example.org/foo", "http://rdf.org/type")
 	strictEqual results.length, 2
-	strictEqual results[0].value, "http://skos.org/Concept"
+	strictEqual results[0].value, "http://skos.org#Concept"
 	strictEqual results[1].value, "http://foaf.org/Agent"
 
 	triple =
 		sbj: { type: "uri", value: "http://example.org/foo" }
-		prd: { type: "uri", value: "http://skos.org/related" }
+		prd: { type: "uri", value: "http://skos.org#related" }
 		obj: { type: "uri", value: "http://example.org/bar" }
 	store.add(triple)
 
 	strictEqual store.query("http://example.org/foo",
-			"http://skos.org/related")[0].value, "http://example.org/bar"
+			"http://skos.org#related")[0].value, "http://example.org/bar"
 
 test "initialization", ->
 	store = new ns.RDFStore([{
 		sbj: { type: "uri", value: "http://example.org/foo" }
 		prd: { type: "uri", value: "http://rdf.org/type" }
-		obj: { type: "uri", value: "http://skos.org/Concept" }
+		obj: { type: "uri", value: "http://skos.org#Concept" }
 	}, {
 		sbj: { type: "uri", value: "http://example.org/foo" }
 		prd: { type: "uri", value: "http://rdf.org/type" }
 		obj: { type: "uri", value: "http://foaf.org/Agent" }
 	}, {
 		sbj: { type: "uri", value: "http://example.org/foo" }
-		prd: { type: "uri", value: "http://skos.org/related" }
+		prd: { type: "uri", value: "http://skos.org#related" }
 		obj: { type: "uri", value: "http://example.org/bar" }
 	}])
 
 	results = store.query("http://example.org/foo", "http://rdf.org/type")
 	strictEqual results.length, 2
-	strictEqual results[0].value, "http://skos.org/Concept"
+	strictEqual results[0].value, "http://skos.org#Concept"
 	strictEqual results[1].value, "http://foaf.org/Agent"
 	strictEqual store.query("http://example.org/bar"), null
 	strictEqual store.query("http://example.org/foo",
-			"http://skos.org/related")[0].value, "http://example.org/bar"
+			"http://skos.org#related")[0].value, "http://example.org/bar"
+
+test "abbreviating and unabbreviating URIs (prefixed names)", ->
+	ns.namespaces["rdf"] = "http://rdf.org/"
+	ns.namespaces["skos"] = "http://skos.org#"
+
+	strictEqual ns.RDFStore.shorten("http://rdf.org/type"), "rdf:type"
+	strictEqual ns.RDFStore.shorten("http://skos.org#Concept"), "skos:Concept"
+	strictEqual ns.RDFStore.shorten("http://example.org/foo"),
+			"http://example.org/foo"
+
+	strictEqual ns.RDFStore.expand("rdf:type"), "http://rdf.org/type"
+	strictEqual ns.RDFStore.expand("skos:Concept"), "http://skos.org#Concept"
+	strictEqual ns.RDFStore.expand("foo"), null
+	strictEqual ns.RDFStore.expand("foo:bar"), null
+
+test "prefixed names", ->
+	ns.namespaces["rdf"] = "http://rdf.org/"
+	ns.namespaces["skos"] = "http://skos.org#"
+	ns.namespaces["ex"] = "http://example.org/"
+	store = new ns.RDFStore
+
+	triple =
+		sbj: { type: "uri", value: "http://example.org/foo" }
+		prd: { type: "uri", value: "http://rdf.org/type" }
+		obj: { type: "uri", value: "http://skos.org#Concept" }
+	store.add(triple)
+
+	#strictEqual store.query("ex:foo", "rdf:type")[0], "http://skos.org#Concept"
+	expect 0 # XXX: DEBUG'd

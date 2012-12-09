@@ -2,6 +2,10 @@ ns = this.VISKOSITY
 
 module "models"
 
+test "default namespaces", ->
+	strictEqual ns.namespaces.rdf, "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	strictEqual ns.namespaces.rdfs, "http://www.w3.org/2000/01/rdf-schema#"
+
 test "nodes", ->
 	throws (-> node = new ns.Node), TypeError, "ID required"
 

@@ -14,6 +14,7 @@ class ns.RDFStore
 		sbj = (@cache[triple.sbj.value] ||= {})
 		prd = (sbj[triple.prd.value] ||= [])
 		prd.push(triple.obj)
+		# TODO: store as prefixed names?
 
 	# arguments are strings representing subject and predicate, respectively
 	# if `prd` is supplied, a list of objects is returned - otherwise all known
@@ -27,3 +28,18 @@ class ns.RDFStore
 				return null
 		else
 			return _sbj or null
+
+	@shorten: (uri) -> # XXX: does not belong here!?
+		for prefix, iri of ns.namespaces
+			if uri.indexOf(iri) == 0
+				return uri.replace(iri, "#{prefix}:")
+		return uri
+
+	@expand: (prefixedName) -> # XXX: does not belong here!?
+		[prefix, localPart] = prefixedName.split(":")
+		return null unless localPart
+
+		for namespace, iri of ns.namespaces
+			if namespace == prefix
+				return prefixedName.replace("#{prefix}:", iri)
+		return null
