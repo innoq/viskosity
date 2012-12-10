@@ -6,18 +6,14 @@ ns.namespaces =
 
 class ns.Node
 
-	constructor: (@id, type, label) ->
-		@type = type if type
-		@label = label if label
-
+	constructor: (@id, @type, @label) ->
 		throw "ID is an obligatory string" unless @id.substr
 
 
 class ns.Edge
 
-	constructor: (@source, @target, type, directed) ->
-		@type = type if type
-		@directed = !!directed # XXX: should be inferred from type!?
-
+	constructor: (@source, @target, @type, directed) ->
 		throw "source and target are obligatory strings" unless @source and
 				@source.substr and @target and @target.substr
+
+		@directed = !!directed # XXX: should be inferred from type!?

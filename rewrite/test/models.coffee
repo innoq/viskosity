@@ -13,18 +13,18 @@ test "nodes", ->
 
 	node = new ns.Node("foo")
 	strictEqual node.id, "foo"
-	strictEqual Object.keys(node).length, 1
+	strictEqual node.type, undefined
+	strictEqual node.label, undefined
 
 	node = new ns.Node("foo", "skos:Concept")
 	strictEqual node.id, "foo"
 	strictEqual node.type, "skos:Concept"
-	strictEqual Object.keys(node).length, 2
+	strictEqual node.label, undefined
 
 	node = new ns.Node("foo", "skos:Concept", "Foo")
 	strictEqual node.id, "foo"
 	strictEqual node.type, "skos:Concept"
 	strictEqual node.label, "Foo"
-	strictEqual Object.keys(node).length, 3
 
 test "edges", ->
 	throws (-> edge = new ns.Edge), "source and target IDs required"
@@ -33,10 +33,13 @@ test "edges", ->
 	throws (-> edge = new ns.Edge("foo", 456)), "IDs must be strings"
 
 	edge = new ns.Edge("foo", "bar")
+	strictEqual edge.source, "foo"
+	strictEqual edge.target, "bar"
+	strictEqual edge.type, undefined
 	strictEqual edge.directed, false
-	strictEqual Object.keys(edge).length, 3
 
 	edge = new ns.Edge("foo", "bar", "skos:related")
+	strictEqual edge.source, "foo"
+	strictEqual edge.target, "bar"
 	strictEqual edge.type, "skos:related"
 	strictEqual edge.directed, false
-	strictEqual Object.keys(edge).length, 4
