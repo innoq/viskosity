@@ -6,8 +6,9 @@ ns.namespaces =
 
 class ns.Node
 
-	constructor: (@id, type) ->
+	constructor: (@id, type, label) ->
 		@type = type if type
+		@label = label if label
 
 		throw "ID is an obligatory string" unless @id.substr
 

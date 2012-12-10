@@ -10,7 +10,7 @@ class ns.RDFStore
 	# `triple` is an object with members `sbj`, `prd` and `obj`, each in turn an
 	# object with members `value` and `type`
 	add: (triple) ->
-		# subject and predicate are always URIs -- XXX: blank nodes?
+		# subject and predicate are always URIs -- XXX: valid assumption? (e.g. blank nodes)
 		sbj = (@cache[triple.sbj.value] ||= {})
 		prd = (sbj[triple.prd.value] ||= [])
 		prd.push(triple.obj)

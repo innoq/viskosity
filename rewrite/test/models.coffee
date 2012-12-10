@@ -20,6 +20,12 @@ test "nodes", ->
 	strictEqual node.type, "skos:Concept"
 	strictEqual Object.keys(node).length, 2
 
+	node = new ns.Node("foo", "skos:Concept", "Foo")
+	strictEqual node.id, "foo"
+	strictEqual node.type, "skos:Concept"
+	strictEqual node.label, "Foo"
+	strictEqual Object.keys(node).length, 3
+
 test "edges", ->
 	throws (-> edge = new ns.Edge), "source and target IDs required"
 	throws (-> edge = new ns.Edge("foo")), "source and target IDs required"
