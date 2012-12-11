@@ -8,23 +8,25 @@ test "default namespaces", ->
 
 test "nodes", ->
 	throws (-> node = new ns.Node), TypeError, "ID required"
-
 	throws (-> node = new ns.Node(123)), "ID must be string"
 
 	node = new ns.Node("foo")
 	strictEqual node.id, "foo"
 	strictEqual node.type, undefined
 	strictEqual node.label, undefined
+	strictEqual Object.keys(node).length, 3
 
 	node = new ns.Node("foo", "skos:Concept")
 	strictEqual node.id, "foo"
 	strictEqual node.type, "skos:Concept"
 	strictEqual node.label, undefined
+	strictEqual Object.keys(node).length, 3
 
 	node = new ns.Node("foo", "skos:Concept", "Foo")
 	strictEqual node.id, "foo"
 	strictEqual node.type, "skos:Concept"
 	strictEqual node.label, "Foo"
+	strictEqual Object.keys(node).length, 3
 
 test "edges", ->
 	throws (-> edge = new ns.Edge), "source and target IDs required"
@@ -37,9 +39,18 @@ test "edges", ->
 	strictEqual edge.target, "bar"
 	strictEqual edge.type, undefined
 	strictEqual edge.directed, false
+	strictEqual Object.keys(edge).length, 4
 
 	edge = new ns.Edge("foo", "bar", "skos:related")
 	strictEqual edge.source, "foo"
 	strictEqual edge.target, "bar"
 	strictEqual edge.type, "skos:related"
 	strictEqual edge.directed, false
+	strictEqual Object.keys(edge).length, 4
+
+	edge = new ns.Edge("foo", "bar", null, true)
+	strictEqual edge.source, "foo"
+	strictEqual edge.target, "bar"
+	strictEqual edge.type, null
+	strictEqual edge.directed, true
+	strictEqual Object.keys(edge).length, 4

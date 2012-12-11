@@ -16,4 +16,4 @@ class ns.Edge
 		throw "source and target are obligatory strings" unless @source and
 				@source.substr and @target and @target.substr
 
-		@directed = !!directed # XXX: presentational; should be inferred from type
+		@directed = !!directed
