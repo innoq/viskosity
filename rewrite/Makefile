@@ -1,4 +1,4 @@
-.PHONY: test lint dependencies
+.PHONY: test lint dependencies clean
 
 qunit_version = 1.10.0
 
@@ -17,3 +17,6 @@ dependencies:
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).css")
 	$(call download, "lib/phantomjs-qunit-runner.js", \
 		"https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js")
+
+clean:
+	find {scripts,test} -name "*.js" | xargs rm || true
