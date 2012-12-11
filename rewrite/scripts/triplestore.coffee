@@ -1,6 +1,7 @@
 ns = this.VISKOSITY
 
-class ns.RDFStore
+
+class ns.Triplestore
 
 	constructor: (triples) ->
 		@cache = {}

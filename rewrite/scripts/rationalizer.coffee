@@ -1,8 +1,8 @@
 ns = this.VISKOSITY
 
 
-# condenses an RDF graph into "visual" graph data, with certain RDF facts being
-# used as attributes for nodes and edges
+# condenses an RDF graph of triples into "visual" graph data, with certain
+# facts being used as attributes for nodes and edges
 class ns.Rationalizer # XXX: should just be a function
 
 	# `rdfData` is a map of subject/facts pairs, where facts is a map of
@@ -30,7 +30,7 @@ class ns.Rationalizer # XXX: should just be a function
 			return label[0].value if label?[0]
 
 	nodeType: (facts) ->
-		prd = ns.RDFStore.expand("rdf:type")
+		prd = ns.Triplestore.expand("rdf:type")
 		types = facts[prd]
 		return null unless types
 

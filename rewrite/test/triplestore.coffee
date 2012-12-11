@@ -1,6 +1,6 @@
 ns = this.VISKOSITY
 
-module "RDF store", {
+module "triplestore", {
 	setup: () ->
 		@namespaces = ns.namespaces
 		ns.namespaces = {}
@@ -9,7 +9,7 @@ module "RDF store", {
 }
 
 test "adding and retrieving triples", ->
-	store = new ns.RDFStore
+	store = new ns.Triplestore
 
 	triple =
 		sbj: { type: "uri", value: "http://example.org/foo" }
@@ -48,7 +48,7 @@ test "adding and retrieving triples", ->
 			"http://skos.org#related")[0].value, "http://example.org/bar"
 
 test "initialization", ->
-	store = new ns.RDFStore([{
+	store = new ns.Triplestore([{
 		sbj: { type: "uri", value: "http://example.org/foo" }
 		prd: { type: "uri", value: "http://rdf.org/type" }
 		obj: { type: "uri", value: "http://skos.org#Concept" }
@@ -74,21 +74,21 @@ test "abbreviating and unabbreviating URIs (prefixed names)", ->
 	ns.namespaces["rdf"] = "http://rdf.org/"
 	ns.namespaces["skos"] = "http://skos.org#"
 
-	strictEqual ns.RDFStore.shorten("http://rdf.org/type"), "rdf:type"
-	strictEqual ns.RDFStore.shorten("http://skos.org#Concept"), "skos:Concept"
-	strictEqual ns.RDFStore.shorten("http://example.org/foo"),
+	strictEqual ns.Triplestore.shorten("http://rdf.org/type"), "rdf:type"
+	strictEqual ns.Triplestore.shorten("http://skos.org#Concept"), "skos:Concept"
+	strictEqual ns.Triplestore.shorten("http://example.org/foo"),
 			"http://example.org/foo"
 
-	strictEqual ns.RDFStore.expand("rdf:type"), "http://rdf.org/type"
-	strictEqual ns.RDFStore.expand("skos:Concept"), "http://skos.org#Concept"
-	strictEqual ns.RDFStore.expand("foo"), null
-	strictEqual ns.RDFStore.expand("foo:bar"), null
+	strictEqual ns.Triplestore.expand("rdf:type"), "http://rdf.org/type"
+	strictEqual ns.Triplestore.expand("skos:Concept"), "http://skos.org#Concept"
+	strictEqual ns.Triplestore.expand("foo"), null
+	strictEqual ns.Triplestore.expand("foo:bar"), null
 
 test "prefixed names", ->
 	ns.namespaces["rdf"] = "http://rdf.org/"
 	ns.namespaces["skos"] = "http://skos.org#"
 	ns.namespaces["ex"] = "http://example.org/"
-	store = new ns.RDFStore
+	store = new ns.Triplestore
 
 	triple =
 		sbj: { type: "uri", value: "http://example.org/foo" }
