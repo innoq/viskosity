@@ -1,5 +1,5 @@
 this.VISKOSITY = ns = {}
-ns.namespaces =
+ns.namespaces = # XXX: should not be a global, but an instance (e.g. `Context`?)
 	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	rdfs: "http://www.w3.org/2000/01/rdf-schema#"
 
@@ -16,4 +16,4 @@ class ns.Edge
 		throw "source and target are obligatory strings" unless @source and
 				@source.substr and @target and @target.substr
 
-		@directed = !!directed # XXX: should be inferred from type!?
+		@directed = !!directed # XXX: presentational; should be inferred from type

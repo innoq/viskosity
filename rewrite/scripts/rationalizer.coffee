@@ -1,5 +1,5 @@
 ns = this.VISKOSITY
-expand = ns.RDFStore.expand
+
 
 # condenses an RDF graph into "visual" graph data, with certain RDF facts being
 # used as attributes for nodes and edges
@@ -11,6 +11,7 @@ class ns.Rationalizer # XXX: should just be a function
 	#         predicate: [object, ...]
 	# `nodeTypes` and `labelRels` (optional) are ordered lists of URIs
 	# representing valid node and label types, respectively
+	# returns a map of `Node`s and `Edge`s
 	constructor: (rdfData, @nodeTypes, @labelRels=[]) ->
 		@nodes = {}
 		@edges = {}
@@ -29,7 +30,7 @@ class ns.Rationalizer # XXX: should just be a function
 			return label[0].value if label?[0]
 
 	nodeType: (facts) ->
-		prd = expand("rdf:type")
+		prd = ns.RDFStore.expand("rdf:type")
 		types = facts[prd]
 		return null unless types
 

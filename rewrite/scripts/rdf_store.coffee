@@ -30,7 +30,7 @@ class ns.RDFStore
 			return _sbj or null
 
 	@shorten: (uri) -> # XXX: does not belong here!?
-		for prefix, iri of ns.namespaces
+		for prefix, iri of ns.namespaces # XXX: relying on `namespaces` global smells
 			if uri.indexOf(iri) == 0
 				return uri.replace(iri, "#{prefix}:")
 		return uri
@@ -39,7 +39,7 @@ class ns.RDFStore
 		[prefix, localPart] = prefixedName.split(":")
 		return null unless localPart
 
-		for namespace, iri of ns.namespaces
+		for namespace, iri of ns.namespaces # XXX: relying on `namespaces` global smells
 			if namespace == prefix
 				return prefixedName.replace("#{prefix}:", iri)
 		return null
