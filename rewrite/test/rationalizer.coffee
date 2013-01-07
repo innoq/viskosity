@@ -39,11 +39,15 @@ test "edge extraction", ->
 	nodeTypes = ["http://skos.org#Concept"]
 
 	relTypes =
+		directed: ["http://skos.org#narrower"]
 		undirected: ["http://skos.org#related"]
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
 				{ type: "uri", value: "http://skos.org#Concept" }
+			]
+			"http://skos.org#narrower": [
+				{ type: "uri", value: "http://example.org/bar" }
 			]
 			"http://skos.org#related": [
 				{ type: "uri", value: "http://example.org/bar" }
@@ -55,9 +59,18 @@ test "edge extraction", ->
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
 	edgeIDs = Object.keys(vgraph.edges)
-	strictEqual edgeIDs.length, 1
-	strictEqual edgeIDs[0], "http://example.org/foo http://example.org/bar"
-	edge = vgraph.edges["http://example.org/foo http://example.org/bar"]
+	strictEqual edgeIDs.length, 2
+	edgeID = "http://example.org/foo http://skos.org#narrower http://example.org/bar"
+	strictEqual edgeIDs[0], edgeID
+	edge = vgraph.edges[edgeID]
+	edge = vgraph.edges["http://example.org/foo http://skos.org#narrower http://example.org/bar"]
+	strictEqual edge.source, "http://example.org/foo"
+	strictEqual edge.target, "http://example.org/bar"
+	strictEqual edge.type, "http://skos.org#narrower"
+	strictEqual edge.directed, true
+	edgeID = "http://example.org/foo http://skos.org#related http://example.org/bar"
+	strictEqual edgeIDs[1], edgeID
+	edge = vgraph.edges[edgeID]
 	strictEqual edge.source, "http://example.org/foo"
 	strictEqual edge.target, "http://example.org/bar"
 	strictEqual edge.type, "http://skos.org#related"
@@ -81,8 +94,9 @@ test "edge extraction", ->
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
 	edgeIDs = Object.keys(vgraph.edges)
 	strictEqual edgeIDs.length, 1
-	strictEqual edgeIDs[0], "http://example.org/foo http://example.org/bar"
-	edge = vgraph.edges["http://example.org/foo http://example.org/bar"]
+	edgeID = "http://example.org/foo http://skos.org#narrower http://example.org/bar"
+	strictEqual edgeIDs[0], edgeID
+	edge = vgraph.edges[edgeID]
 	strictEqual edge.source, "http://example.org/foo"
 	strictEqual edge.target, "http://example.org/bar"
 	strictEqual edge.type, "http://skos.org#narrower"

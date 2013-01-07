@@ -25,7 +25,7 @@ class ns.Rationalizer # XXX: should just be a function
 
 			rels = @determineRelations(sbj, facts)
 			for [target, type, directed] in rels
-				id = "#{sbj} #{target}" # XXX: inefficient
+				id = "#{sbj} #{type} #{target}" # XXX: inefficient, memory-wise
 				@edges[id] = new ns.Edge(sbj, target, type, directed)
 
 		return { @nodes, @edges }
