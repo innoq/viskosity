@@ -35,6 +35,59 @@ test "node extraction", ->
 	strictEqual vgraph.nodes["http://example.org/baz"].type,
 			"http://skos.org#Concept"
 
+test "edge extraction", ->
+	nodeTypes = ["http://skos.org#Concept"]
+
+	relTypes =
+		undirected: ["http://skos.org#related"]
+	rdfData =
+		"http://example.org/foo":
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+				{ type: "uri", value: "http://skos.org#Concept" }
+			]
+			"http://skos.org#related": [
+				{ type: "uri", value: "http://example.org/bar" }
+			]
+		"http://example.org/bar":
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+				{ type: "uri", value: "http://skos.org#Concept" }
+			]
+
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
+	edgeIDs = Object.keys(vgraph.edges)
+	strictEqual edgeIDs.length, 1
+	strictEqual edgeIDs[0], "http://example.org/foo http://example.org/bar"
+	edge = vgraph.edges["http://example.org/foo http://example.org/bar"]
+	strictEqual edge.source, "http://example.org/foo"
+	strictEqual edge.target, "http://example.org/bar"
+	strictEqual edge.type, "http://skos.org#related"
+	strictEqual edge.directed, false
+
+	relTypes =
+		directed: ["http://skos.org#narrower"]
+	rdfData =
+		"http://example.org/foo":
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+				{ type: "uri", value: "http://skos.org#Concept" }
+			]
+			"http://skos.org#narrower": [
+				{ type: "uri", value: "http://example.org/bar" }
+			]
+		"http://example.org/bar":
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+				{ type: "uri", value: "http://skos.org#Concept" }
+			]
+
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
+	edgeIDs = Object.keys(vgraph.edges)
+	strictEqual edgeIDs.length, 1
+	strictEqual edgeIDs[0], "http://example.org/foo http://example.org/bar"
+	edge = vgraph.edges["http://example.org/foo http://example.org/bar"]
+	strictEqual edge.source, "http://example.org/foo"
+	strictEqual edge.target, "http://example.org/bar"
+	strictEqual edge.type, "http://skos.org#narrower"
+	strictEqual edge.directed, true
+
 test "label assignment", ->
 	nodeTypes = ["http://skos.org#Concept"]
 	labelTypes = ["http://rdfs.org/label"]
@@ -45,7 +98,7 @@ test "label assignment", ->
 				{ type: "uri", value: "http://random.org/something" }
 			]
 
-	vgraph = new ns.Rationalizer(rdfData, nodeTypes, labelTypes)
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
 	strictEqual Object.keys(vgraph.nodes).length, 0
 
 	rdfData =
@@ -54,7 +107,7 @@ test "label assignment", ->
 				{ type: "uri", value: "http://skos.org#Concept" }
 			]
 
-	vgraph = new ns.Rationalizer(rdfData, nodeTypes, labelTypes)
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
 	strictEqual vgraph.nodes["http://example.org/foo"].label, undefined
 
 	rdfData =
@@ -66,7 +119,7 @@ test "label assignment", ->
 				{ type: "literal", value: "Foo" }
 			]
 
-	vgraph = new ns.Rationalizer(rdfData, nodeTypes, labelTypes)
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
 	strictEqual vgraph.nodes["http://example.org/foo"].label, "Foo"
 
 test "label precedence", ->
@@ -85,10 +138,10 @@ test "label precedence", ->
 
 	labelTypes = ["http://skos.org#label", "http://rdfs.org/label"]
 
-	vgraph = new ns.Rationalizer(rdfData, nodeTypes, labelTypes)
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
 	strictEqual vgraph.nodes["http://example.org/foo"].label, "Bravo"
 
 	labelTypes = ["http://rdfs.org/label", "http://skos.org#label"]
 
-	vgraph = new ns.Rationalizer(rdfData, nodeTypes, labelTypes)
+	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
 	strictEqual vgraph.nodes["http://example.org/foo"].label, "Alpha"

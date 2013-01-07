@@ -11,16 +11,22 @@ class ns.Rationalizer # XXX: should just be a function
 	#         predicate: [object, ...]
 	# `nodeTypes` and `labelRels` (optional) are ordered lists of URIs
 	# representing valid node and label types, respectively
+	# `nodeRels` is an optional map with members `directed` and `undirected`,
+	# each a list of URIs representing the respective relation type
 	# returns a map of `Node`s and `Edge`s
-	constructor: (rdfData, @nodeTypes, @labelRels=[]) ->
+	constructor: (rdfData, @nodeTypes, @nodeRels={}, @labelRels=[]) ->
 		@nodes = {}
 		@edges = {}
 
 		for sbj, facts of rdfData
-			type = @nodeType(facts)
-			if type
+			if nodeType = @nodeType(facts)
 				label = @label(facts)
-				@nodes[sbj] = new ns.Node(sbj, type, label)
+				@nodes[sbj] = new ns.Node(sbj, nodeType, label)
+
+			rels = @determineRelations(sbj, facts)
+			for [target, type, directed] in rels
+				id = "#{sbj} #{target}" # XXX: inefficient
+				@edges[id] = new ns.Edge(sbj, target, type, directed)
 
 		return { @nodes, @edges }
 
@@ -28,6 +34,17 @@ class ns.Rationalizer # XXX: should just be a function
 		for rel in @labelRels
 			label = facts[rel]
 			return label[0].value if label?[0]
+
+	determineRelations: (sbj, facts) ->
+		rels = []
+
+		for dtype, relTypes of @nodeRels
+			for relType in relTypes
+				targets = facts[relType] or []
+				for target in targets
+					rels.push [target.value, relType, dtype == "directed"]
+
+		return rels
 
 	nodeType: (facts) ->
 		prd = ns.Triplestore.expand("rdf:type")
