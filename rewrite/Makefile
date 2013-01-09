@@ -15,6 +15,8 @@ dependencies:
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).js")
 	$(call download, "lib/qunit.css", \
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).css")
+	$(call download, "lib/blanket.js", \
+		"https://raw.github.com/Migrii/blanket/master/dist/qunit/blanket.min.js")
 	$(call download, "lib/phantomjs-qunit-runner.js", \
 		"https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js")
 
