@@ -3,7 +3,7 @@ ns = this.VISKOSITY
 
 # condenses an RDF graph of triples into "visual" graph data, with certain
 # facts being used as attributes for nodes and edges
-class ns.Rationalizer # XXX: should just be a function
+class ns.Rationalizer
 
 	# `rdfData` is a map of subject/facts pairs, where facts is a map of
 	# predicate/objects pairs:
@@ -14,7 +14,7 @@ class ns.Rationalizer # XXX: should just be a function
 	# `nodeRels` is an optional map with members `directed` and `undirected`,
 	# each a list of URIs representing the respective relation type
 	# returns a map of `Node`s and `Edge`s
-	constructor: (rdfData, @nodeTypes, @nodeRels={}, @labelRels=[]) ->
+	constructor: (rdfData, @nodeTypes, @nodeRels={}, @labelRels=[]) -> # TODO: move configuration arguments into prototype (cf. Presenter)
 		@nodes = {}
 		@edges = {}
 

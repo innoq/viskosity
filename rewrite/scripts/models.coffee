@@ -10,6 +10,20 @@ class ns.Node
 		throw "ID is an obligatory string" unless @id.substr
 
 
+class ns.RenderNode extends ns.Node
+
+	# `shape` is a D3 SVG symbol type:
+	# https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-symbol_type
+	# `size` is a function to be passed the respective node, returning a
+	# numeric value
+	# `color` is the index of the color to be used -- XXX: tight coupling to visualization layer
+	constructor: (id, type, label, shape, size, color) ->
+		super(id, type, label)
+		@shape = shape
+		@size = size
+		@color = color
+
+
 class ns.Edge
 
 	constructor: (@source, @target, @type, directed) ->
@@ -17,3 +31,14 @@ class ns.Edge
 				@source.substr and @target and @target.substr
 
 		@directed = !!directed
+
+
+class ns.RenderEdge extends ns.Edge
+
+	# `path` is a function to be passed the respective source and target nodes,
+	# returning an SVG path description
+	constructor: (source, target, type, directed, className, path, strength) ->
+		super(source, target, type, directed)
+		@class = className
+		@path = path
+		@strength = strength
