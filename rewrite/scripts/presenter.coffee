@@ -26,11 +26,14 @@ class ns.Presenter
 		directed: drawArc
 
 	edgeClass:
-		default: "undirected"
-		directed: "directed"
+		default: "edge link undirected"
+		directed: "edge link directed"
 
 	edgeWeight:
 		default: 1
+
+	symbolGen: d3.svg.symbol()
+	colorGen: d3.scale.category20()
 
 	# `vgraph` is a map of `Node`s and `Edge`s
 	# returns a map of style-augmented `RenderNode`s and `RenderEdge`s
@@ -40,10 +43,14 @@ class ns.Presenter
 		return { nodes, edges }
 
 	augmentNode: (node) ->
-		shape = @nodeShape[node.type] or @nodeShape["default"]
-		size = (node) -> (node.degree || 1) * 10 + 100 # XXX: arbitrary, does not belong here!?
-		#size = Math.sqrt(size); # shape size is in px² -- XXX: does not belong here!?
+		size = (node) ->
+			size = (node.degree || 1) * 10 + 100 # XXX: arbitrary
+			return Math.sqrt(size) # shape size is in px²
+		_shape = @nodeShape[node.type] or @nodeShape["default"]
+		_shape = @symbolGen.type(_shape)
+		shape = (node) -> _shape.size(node.size)()
 		color = @nodeColorIndex[node.type] or @nodeColorIndex["default"]
+		color = @colorGen(color)
 		return new ns.RenderNode(node.id, node.type, node.label, shape, size,
 				color)
 
@@ -51,6 +58,6 @@ class ns.Presenter
 		className = @edgeClass[if edge.directed then "directed" else "default"]
 		path = @edgePath[if edge.directed then "directed" else "default"]
 		strength = @edgeWeight[edge.type] or @edgeWeight["default"]
-		strength = Math.sqrt(strength * 3) # XXX: arbitrary, does not belong here!?
+		strength = Math.sqrt(strength * 3) # XXX: arbitrary
 		return new ns.RenderEdge(edge.source, edge.target, edge.type,
 				edge.directed, className, path, strength)

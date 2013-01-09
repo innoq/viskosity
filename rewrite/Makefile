@@ -11,6 +11,8 @@ test:
 
 dependencies:
 	mkdir -p lib
+	$(call download, "lib/d3.js", "http://d3js.org/d3.v3.min.js")
+	# dev-only
 	$(call download, "lib/qunit.js", \
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).js")
 	$(call download, "lib/qunit.css", \
