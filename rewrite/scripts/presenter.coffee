@@ -43,12 +43,12 @@ class ns.Presenter
 		return { nodes, edges }
 
 	augmentNode: (node) ->
-		size = (node) ->
-			size = (node.degree || 1) * 10 + 100 # XXX: arbitrary
+		size = () ->
+			size = (@degree || 1) * 10 + 100 # XXX: arbitrary
 			return Math.sqrt(size) # shape size is in px²
 		_shape = @nodeShape[node.type] or @nodeShape["default"]
 		_shape = @symbolGen.type(_shape)
-		shape = (node) -> _shape.size(node.size)()
+		shape = () -> _shape.size(@size())()
 		color = @nodeColorIndex[node.type] or @nodeColorIndex["default"]
 		color = @colorGen(color)
 		return new ns.RenderNode(node.id, node.type, node.label, shape, size,

@@ -12,11 +12,10 @@ class ns.Node
 
 class ns.RenderNode extends ns.Node
 
-	# `shape` is a D3 SVG symbol type:
-	# https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-symbol_type
-	# `size` is a function to be passed the respective node, returning a
-	# numeric value
-	# `color` is the index of the color to be used -- XXX: tight coupling to visualization layer
+	# `shape` and `size` are functions, to be called as methods on the
+	# respective node, returning an SVG path description and a numeric value,
+	# respectively
+	# `color` is a CSS color value
 	constructor: (id, type, label, shape, size, color) ->
 		super(id, type, label)
 		@shape = shape

@@ -3,24 +3,28 @@ ns = this.VISKOSITY
 module "presenter"
 
 test "node augmentation", ->
-	dummyNode = (degree) -> { degree } # pseudo node as augmented by D3
-
 	node = new ns.Node("foo")
 
 	augNode = ns.Presenter.prototype.augmentNode(node)
+	# annotate as done by D3
+	augNode.degree = 3
+
 	strictEqual augNode instanceof ns.RenderNode, true
-	strictEqual augNode.shape({ size: 3 }), # circle
-			"M0,0.9772050238058398A0.9772050238058398,0.9772050238058398 0 1,1 0,-0.9772050238058398A0.9772050238058398,0.9772050238058398 0 1,1 0,0.9772050238058398Z"
-	strictEqual augNode.size(dummyNode(3)), Math.sqrt(130)
+	strictEqual augNode.size(), Math.sqrt(130)
+	strictEqual augNode.shape(), # circle
+			"M0,1.905069840695773A1.905069840695773,1.905069840695773 0 1,1 0,-1.905069840695773A1.905069840695773,1.905069840695773 0 1,1 0,1.905069840695773Z"
 	strictEqual augNode.color, "#1f77b4"
 
 	node = new ns.Node("foo", "collection") # XXX: invalid type
 
 	augNode = ns.Presenter.prototype.augmentNode(node)
+	# annotate as done by D3
+	augNode.degree = 1
+
 	strictEqual augNode instanceof ns.RenderNode, true
-	strictEqual augNode.shape({ size: 3 }), # diamond
-			"M0,-1.6118548977353129L0.9306048591020996,0 0,1.6118548977353129 -0.9306048591020996,0Z"
-	strictEqual augNode.size(dummyNode(1)), Math.sqrt(110)
+	strictEqual augNode.shape(), # diamond
+			"M0,-3.013793467093005L1.740014469508082,0 0,3.013793467093005 -1.740014469508082,0Z"
+	strictEqual augNode.size(), Math.sqrt(110)
 	strictEqual augNode.color, "#aec7e8"
 
 test "edge augmentation", ->
