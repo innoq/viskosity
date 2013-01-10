@@ -1,5 +1,6 @@
 .PHONY: test lint dependencies clean
 
+jquery_version = 1.8
 qunit_version = 1.10.0
 
 download = \
@@ -12,6 +13,8 @@ test:
 dependencies:
 	mkdir -p lib
 	$(call download, "lib/d3.js", "http://d3js.org/d3.v3.min.js")
+	$(call download, "lib/jquery.js", \
+		"http://ajax.googleapis.com/ajax/libs/jquery/$(jquery_version)/jquery.min.js")
 	# dev-only
 	$(call download, "lib/qunit.js", \
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).js")
