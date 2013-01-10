@@ -35,7 +35,7 @@ test "edge augmentation", ->
 	strictEqual augEdge instanceof ns.RenderEdge, true
 	strictEqual augEdge.path(foo, bar), "M0,0L1,1"
 	strictEqual augEdge.class, "edge link undirected"
-	strictEqual augEdge.strength, Math.sqrt(3)
+	strictEqual augEdge.weight, Math.sqrt(3)
 
 	edge = new ns.Edge("foo", "bar", "dummy", true)
 

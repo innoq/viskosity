@@ -57,7 +57,7 @@ class ns.Presenter
 	augmentEdge: (edge) ->
 		className = @edgeClass[if edge.directed then "directed" else "default"]
 		path = @edgePath[if edge.directed then "directed" else "default"]
-		strength = @edgeWeight[edge.type] or @edgeWeight["default"]
-		strength = Math.sqrt(strength * 3) # XXX: arbitrary
+		weight = @edgeWeight[edge.type] or @edgeWeight["default"]
+		weight = Math.sqrt(weight * 3) # XXX: arbitrary
 		return new ns.RenderEdge(edge.source, edge.target, edge.type,
-				edge.directed, className, path, strength)
+				edge.directed, className, path, weight)

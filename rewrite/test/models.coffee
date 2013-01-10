@@ -86,5 +86,5 @@ test "render edges", ->
 	strictEqual edge.target, "bar"
 	strictEqual edge.class, "alpha bravo"
 	strictEqual edge.path, "..."
-	strictEqual edge.strength, 12
+	strictEqual edge.weight, 12
 	strictEqual Object.keys(edge).length, 7
