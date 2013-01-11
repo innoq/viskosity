@@ -36,14 +36,22 @@ test "edge augmentation", ->
 	edge = new ns.Edge("foo", "bar")
 
 	augEdge = ns.Presenter.prototype.augmentEdge(edge)
+	# simulate object references
+	augEdge.source = foo
+	augEdge.target = bar
+
 	strictEqual augEdge instanceof ns.RenderEdge, true
-	strictEqual augEdge.path(foo, bar), "M0,0L1,1"
+	strictEqual augEdge.path(), "M0,0L1,1"
 	strictEqual augEdge.class, "link undirected"
 	strictEqual augEdge.weight, Math.sqrt(3)
 
 	edge = new ns.Edge("foo", "bar", "dummy", true)
 
 	augEdge = ns.Presenter.prototype.augmentEdge(edge)
+	# simulate object references
+	augEdge.source = foo
+	augEdge.target = bar
+
 	strictEqual augEdge.path(foo, bar),
 			"M0,0A1.4142135623730951,1.4142135623730951 0 0,1 1,1"
 	strictEqual augEdge.class, "link directed"

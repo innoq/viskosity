@@ -44,8 +44,7 @@ class ns.Visualizer
 		while ++i < l
 			q.visit(collide(nodes[i]))
 
-		@root.selectAll(@edgeSelector).attr("d",
-				(edge) -> edge.path(edge)) # FIXME: `path` expects to be passed the respective nodes
+		@root.selectAll(@edgeSelector).attr("d", (edge) -> edge.path())
 
 		@root.selectAll(@nodeSelector).attr("transform",
 				(node) -> "translate(#{node.x},#{node.y})")
