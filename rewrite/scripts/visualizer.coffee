@@ -12,22 +12,30 @@ class ns.Visualizer
 	edgeSelector: "path.link"
 
 	# `container` may be a DOM node, selector or jQuery object
-	constructor: (container, settings={}) ->
+	# `data` is the initial data set, a map of `nodes` and `edges` arrays
+	constructor: (container, data={}, settings={}) ->
 		container = if container.jquery then container else $(container)
 		container.addClass("viz")
 		width = settings.width or container.width()
 		height = settings.height or container.height()
+
+		data.nodes ||= []
+		data.edges ||= []
 
 		@root = d3.select(container[0]).append("svg").
 				attr("width", width).attr("height", height)
 		@graph = d3.layout.force().size([@width, @height]).charge(@charge).
 				linkDistance(@linkDistance).linkStrength(@linkStrength)
 
+		@graph.nodes(data.nodes).links(data.edges)
+
 		@indicator = @root.append("text").text("loading…").
 				attr("x", width / 2).attr("y", height / 2).
 				attr("dy", ".35em").attr("text-anchor", "middle")
 
 		@graph.on("tick", => @onTick())
+
+		@render()
 
 	onTick: (ev) ->
 		# collision detection; avoids label overlap -- XXX: ineffective?
@@ -41,6 +49,7 @@ class ns.Visualizer
 
 		@root.selectAll(@nodeSelector).attr("transform",
 				(node) -> "translate(#{node.x},#{node.y})")
+
 	render: ->
 		@indicator.classed("hidden", true)
 
@@ -56,9 +65,9 @@ class ns.Visualizer
 				call(@graph.drag) # XXX: unnecessary!?
 		newNodes.append("path").attr("d", (node) -> node.shape()).
 				style("fill", (node) -> node.color)
-		newNodes.append("a").attr("xlink:href", (node) -> node.url).
-				append("text").text((node) -> node.url)
-		nodes.select("text").text((node) -> node.url); # update existing nodes -- XXX: redundant!?
+		newNodes.append("a").attr("xlink:href", (node) -> node.url). # XXX: `url` unused/undocumented
+				append("text").text((node) -> node.label)
+		nodes.select("text").text((node) -> node.label); # update existing nodes -- XXX: redundant!?
 
 		# extensiblity hooks
 		if @onClick
