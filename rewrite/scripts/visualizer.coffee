@@ -21,6 +21,13 @@ class ns.Visualizer
 
 		data.nodes ||= []
 		data.edges ||= []
+		# turn edges' node IDs into object references -- FIXME: must be reusable outside the initialization
+		nodeIndex = {}
+		for node in data.nodes
+			nodeIndex[node.id] = node
+		for edge in data.edges
+			edge.source = nodeIndex[edge.source]
+			edge.target = nodeIndex[edge.target]
 
 		@root = d3.select(container[0]).append("svg").
 				attr("width", width).attr("height", height)
