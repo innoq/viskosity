@@ -38,7 +38,7 @@ test "edge augmentation", ->
 	augEdge = ns.Presenter.prototype.augmentEdge(edge)
 	strictEqual augEdge instanceof ns.RenderEdge, true
 	strictEqual augEdge.path(foo, bar), "M0,0L1,1"
-	strictEqual augEdge.class, "edge link undirected"
+	strictEqual augEdge.class, "link undirected"
 	strictEqual augEdge.weight, Math.sqrt(3)
 
 	edge = new ns.Edge("foo", "bar", "dummy", true)
@@ -46,7 +46,7 @@ test "edge augmentation", ->
 	augEdge = ns.Presenter.prototype.augmentEdge(edge)
 	strictEqual augEdge.path(foo, bar),
 			"M0,0A1.4142135623730951,1.4142135623730951 0 0,1 1,1"
-	strictEqual augEdge.class, "edge link directed"
+	strictEqual augEdge.class, "link directed"
 
 test "graph augmentation", ->
 	vgraph =

@@ -36,7 +36,7 @@ class ns.RenderEdge extends ns.Edge
 
 	# `path` is a function to be passed the respective source and target nodes,
 	# returning an SVG path description
-	constructor: (source, target, type, directed, className, path, weight) ->
+	constructor: (source, target, type, directed, className, path, weight) -> # XXX: overly complex signature?
 		super(source, target, type, directed)
 		@class = className
 		@path = path

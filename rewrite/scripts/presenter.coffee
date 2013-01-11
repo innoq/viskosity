@@ -26,8 +26,8 @@ class ns.Presenter
 		directed: drawArc
 
 	edgeClass:
-		default: "edge link undirected"
-		directed: "edge link directed"
+		default: "link undirected"
+		directed: "link directed"
 
 	edgeWeight:
 		default: 1

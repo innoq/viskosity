@@ -9,7 +9,7 @@ class ns.Visualizer
 	linkDistance: (edge) -> (edge.directed ? 100 : 200) + edge.source.weight # XXX: weight adjustment insufficient? -- TODO: move into presenter
 	linkStrength: (edge) -> edge.directed ? 0.5 : 0.25 # TODO: move into presenter
 	nodeSelector: "g.node"
-	edgeSelector: "path.link"
+	edgeSelector: "path.edge"
 
 	# `container` may be a DOM node, selector or jQuery object
 	# `data` is the initial data set, a map of `nodes` and `edges` arrays
@@ -56,7 +56,8 @@ class ns.Visualizer
 
 		edges = @root.selectAll(@edgeSelector).data(@graph.links())
 		edges.exit().remove() # TODO: animate
-		edges.enter().append("path").attr("class", getter("class")).
+		edges.enter().append("path").
+				attr("class", (edge) -> "edge #{edge.class}").
 				style("stroke-width", getter("weight"))
 
 		nodes = @root.selectAll(@nodeSelector).
