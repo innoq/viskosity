@@ -52,11 +52,12 @@ class ns.Visualizer
 
 	render: ->
 		@indicator.classed("hidden", true)
+		getter = (prop) -> return (obj) -> obj[prop]
 
 		edges = @root.selectAll(@edgeSelector).data(@graph.links())
 		edges.exit().remove() # TODO: animate
-		edges.enter().append("path").attr("class", (edge) -> edge.class).
-				style("stroke-width", (edge) -> edge.weight)
+		edges.enter().append("path").attr("class", getter("class")).
+				style("stroke-width", getter("weight"))
 
 		nodes = @root.selectAll(@nodeSelector).
 				data(@graph.nodes(), @nodeIdentity)
@@ -64,10 +65,10 @@ class ns.Visualizer
 		newNodes = nodes.enter().append("g").attr("class", "node"). # TODO: move class into presenter
 				call(@graph.drag) # XXX: unnecessary!?
 		newNodes.append("path").attr("d", (node) -> node.shape()).
-				style("fill", (node) -> node.color)
-		newNodes.append("a").attr("xlink:href", (node) -> node.url). # XXX: `url` unused/undocumented
-				append("text").text((node) -> node.label)
-		nodes.select("text").text((node) -> node.label); # update existing nodes -- XXX: redundant!?
+				style("fill", getter("color"))
+		newNodes.append("a").attr("xlink:href", getter("url")). # XXX: `.url` unused/undocumented
+				append("text").text(getter("label"))
+		nodes.select("text").text(getter("label")); # update existing nodes -- XXX: redundant!?
 
 		# extensiblity hooks
 		if @onClick
