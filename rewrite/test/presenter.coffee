@@ -30,8 +30,8 @@ test "node augmentation", ->
 test "edge augmentation", ->
 	# pseudo nodes - normally these are retrieved from the store when the
 	# respective attributes (namely `path`) are evaluated
-	foo = { x: 0, y: 0 }
-	bar = { x: 1, y: 1 }
+	foo = x: 0, y: 0
+	bar = x: 1, y: 1
 
 	edge = new ns.Edge("foo", "bar")
 

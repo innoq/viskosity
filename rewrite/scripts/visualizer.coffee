@@ -14,7 +14,7 @@ class ns.Visualizer
 	# `container` may be a DOM node, selector or jQuery object
 	# `data` is the initial data set, a map of `nodes` and `edges` arrays
 	constructor: (container, data={}, settings={}) ->
-		container = if container.jquery then container else $(container)
+		container = if container.jquery then container else $(container) # XXX: unnecessary jQuery dependency?
 		container.addClass("viz")
 		width = settings.width or container.width()
 		height = settings.height or container.height()
@@ -81,8 +81,8 @@ class ns.Visualizer
 		if @onClick
 			viz = this
 			newNodes.on("click", (ev) ->
-				ctx = { context: this, graph: viz }
-				self.onClick.apply(ctx, arguments))
+				ctx = eventContext: this, viz: viz
+				viz.onClick.apply(ctx, arguments))
 		if @onHover
 			newNodes.on("mouseover mouseout", @onHover)
 
