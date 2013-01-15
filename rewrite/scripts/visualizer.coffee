@@ -47,7 +47,9 @@ class ns.Visualizer
 	onTick: (ev) ->
 		# collision detection; avoids label overlap -- XXX: ineffective?
 		nodes = @graph.nodes()
-		q = d3.geom.quadtree(nodes); i = 0; l = nodes.length
+		q = d3.geom.quadtree(nodes)
+		i = 0
+		l = nodes.length
 		while ++i < l
 			q.visit(collide(nodes[i]))
 
