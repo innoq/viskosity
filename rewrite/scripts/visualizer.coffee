@@ -31,7 +31,7 @@ class ns.Visualizer
 
 		@root = d3.select(container[0]).append("svg").
 				attr("width", width).attr("height", height)
-		@graph = d3.layout.force().size([@width, @height]).charge(@charge).
+		@graph = d3.layout.force().size([width, height]).charge(@charge).
 				linkDistance(@linkDistance).linkStrength(@linkStrength)
 
 		@graph.nodes(data.nodes).links(data.edges)
