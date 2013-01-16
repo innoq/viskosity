@@ -35,11 +35,12 @@ class ns.Presenter
 	symbolGen: d3.svg.symbol()
 	colorGen: d3.scale.category20()
 
-	# `vgraph` is a map of `Node`s and `Edge`s
+	# `vgraph` is a map with members `nodes` and `edges`, each a map of
+	# `Node`s/`Edge`s indexed by ID
 	# returns a map of style-augmented `RenderNode`s and `RenderEdge`s
 	constructor: (vgraph) ->
-		nodes = (@augmentNode(node) for node in vgraph.nodes)
-		edges = (@augmentEdge(edge) for edge in vgraph.edges)
+		nodes = (@augmentNode(node) for id, node of vgraph.nodes)
+		edges = (@augmentEdge(edge) for id, edge of vgraph.edges)
 		return { nodes, edges }
 
 	augmentNode: (node) ->

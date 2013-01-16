@@ -58,8 +58,13 @@ test "edge augmentation", ->
 
 test "graph augmentation", ->
 	vgraph =
-		nodes: [new ns.Node("foo"), new ns.Node("bar"), new ns.Node("baz")]
-		edges: [new ns.Edge("foo", "bar"), new ns.Edge("bar", "baz")]
+		nodes:
+			foo: new ns.Node("foo")
+			bar: new ns.Node("bar")
+			baz: new ns.Node("baz")
+		edges:
+			"foo null bar": new ns.Edge("foo", "bar")
+			"bar null baz": new ns.Edge("bar", "baz")
 
 	styledGraph = new ns.Presenter(vgraph)
 
