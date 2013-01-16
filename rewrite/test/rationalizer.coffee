@@ -7,22 +7,22 @@ test "node extraction", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 			"http://skos.org#related": [
-				{ type: "uri", value: "http://example.org/bar" }
+				type: "uri", value: "http://example.org/bar"
 			]
 		"http://example.org/bar":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://random.org/something" }
+				type: "uri", value: "http://random.org/something"
 			]
 		"http://example.org/baz":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 		"http://example.org/foobar":
 			"http://random.org/whatever": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes)
@@ -44,17 +44,17 @@ test "edge extraction", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 			"http://skos.org#narrower": [
-				{ type: "uri", value: "http://example.org/bar" }
+				type: "uri", value: "http://example.org/bar"
 			]
 			"http://skos.org#related": [
-				{ type: "uri", value: "http://example.org/bar" }
+				type: "uri", value: "http://example.org/bar"
 			]
 		"http://example.org/bar":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
@@ -81,14 +81,14 @@ test "edge extraction", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 			"http://skos.org#narrower": [
-				{ type: "uri", value: "http://example.org/bar" }
+				type: "uri", value: "http://example.org/bar"
 			]
 		"http://example.org/bar":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, relTypes)
@@ -109,7 +109,7 @@ test "label assignment", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://random.org/whatever": [
-				{ type: "uri", value: "http://random.org/something" }
+				type: "uri", value: "http://random.org/something"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
@@ -118,7 +118,7 @@ test "label assignment", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
@@ -127,10 +127,10 @@ test "label assignment", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 			"http://rdfs.org/label": [
-				{ type: "literal", value: "Foo" }
+				type: "literal", value: "Foo"
 			]
 
 	vgraph = new ns.Rationalizer(rdfData, nodeTypes, null, labelTypes)
@@ -141,13 +141,13 @@ test "label precedence", ->
 	rdfData =
 		"http://example.org/foo":
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
-				{ type: "uri", value: "http://skos.org#Concept" }
+				type: "uri", value: "http://skos.org#Concept"
 			]
 			"http://rdfs.org/label": [
-				{ type: "literal", value: "Alpha" }
+				type: "literal", value: "Alpha"
 			]
 			"http://skos.org#label": [
-				{ type: "literal", value: "Bravo" }
+				type: "literal", value: "Bravo"
 			]
 
 	labelTypes = ["http://skos.org#label", "http://rdfs.org/label"]
