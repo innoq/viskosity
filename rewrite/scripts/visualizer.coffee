@@ -42,8 +42,6 @@ class ns.Visualizer
 
 		@graph.on("tick", => @onTick())
 
-		@render()
-
 	onTick: (ev) ->
 		# collision detection; avoids label overlap -- XXX: ineffective?
 		nodes = @graph.nodes()

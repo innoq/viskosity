@@ -13,7 +13,7 @@ class ns.InteractiveVisualizer extends ns.Visualizer # XXX: bad name?
 		@provider = settings.provider
 		@root.on("mousedown", (ev) => @toggleHighlight(ev))
 		@root = @root.
-				call(d3.behavior.zoom().scaleExtent([0.5, 8]).
+				call(d3.behavior.zoom().scaleExtent([0.5, 8]). # TODO: configurable values
 						on("zoom", => @onZoom())).
 				append("g"); # required for zoom context
 	
