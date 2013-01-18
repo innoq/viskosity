@@ -32,7 +32,7 @@ class this.VISKOSITY
 		data = new @presenter(data)
 
 		graph = new @visualizer(container, data,
-				provider: @provider
+				fetcher: @fetcher
 				width: settings.width
 				height: settings.height)
 		graph.render()

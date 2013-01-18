@@ -15,13 +15,13 @@ fireEvent = (node, evName) ->
 test "basic initialization", ->
 	container = $("<div />").appendTo(@fixtures)
 	graph = new ns.InteractiveVisualizer(container, null,
-			provider: "dummy",
+			fetcher: "dummy",
 			width: 640,
 			height: 480)
 	graph.render()
 	viz = $("svg", container)
 
-	strictEqual graph.provider, "dummy"
+	strictEqual graph.fetcher, "dummy"
 	strictEqual viz.length, 1
 	strictEqual viz.width(), 640
 	strictEqual viz.height(), 480
@@ -41,7 +41,7 @@ test "highlight active node", ->
 
 	container = $("<div />").appendTo(@fixtures)
 	graph = new ns.InteractiveVisualizer(container, data,
-			provider: (node, store, callback) -> callback()
+			fetcher: (node, store, callback) -> callback()
 			width: 640,
 			height: 480)
 	graph.render()
