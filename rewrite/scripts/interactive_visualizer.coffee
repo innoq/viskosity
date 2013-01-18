@@ -7,7 +7,7 @@ class ns.InteractiveVisualizer extends ns.Visualizer # XXX: bad name?
 	# data - it is passed the respective node along with the full data set and
 	# a callback, which is invoked passing an object with arrays for `nodes`
 	# and `edges`
-	constructor: () ->
+	constructor: ->
 		super
 		settings = arguments[arguments.length - 1]
 		@fetcher = settings.fetcher
@@ -21,7 +21,7 @@ class ns.InteractiveVisualizer extends ns.Visualizer # XXX: bad name?
 		@viz.indicator.classed("hidden", false)
 		@viz.toggleHighlight(@eventContext)
 		data = nodes: @viz.graph.nodes(), edges: @viz.graph.links()
-		@viz.fetcher(item, @viz.store, () => @viz.render())
+		@viz.fetcher(item, @viz.store, => @viz.render())
 
 	onHover: (item) -> # XXX: unused / buggy (`this` confusion)?
 		hovering = d3.event.type == "mouseover"

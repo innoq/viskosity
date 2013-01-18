@@ -26,7 +26,7 @@ class Request
 			data: { query: sparql },
 			headers: { Accept: "application/sparql-results+json" },
 			dataType: "json",
-			success: () => @processResponse.apply(this, arguments)
+			success: => @processResponse.apply(this, arguments)
 		})
 
 	processResponse: (data, status, xhr) ->

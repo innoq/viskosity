@@ -47,7 +47,7 @@ asyncTest "query requests", ->
 	fetcher = ns.sparqlFetcher("/sparql")
 	store = new MockStore
 
-	fetcher({ id: "http://example.org/foo" }, store, () =>
+	fetcher({ id: "http://example.org/foo" }, store, =>
 		strictEqual @reqCount, 1
 		strictEqual @data.reqMethod, "POST"
 		strictEqual @data.reqHeaders.Accept, "application/sparql-results+json"
@@ -66,7 +66,7 @@ asyncTest "store updates", ->
 	fetcher = ns.sparqlFetcher("/sparql")
 	store = new MockStore
 
-	fetcher({ id: "http://example.org/foo" }, store, () ->
+	fetcher({ id: "http://example.org/foo" }, store, ->
 		strictEqual store.nodes.length, 1
 		node = store.nodes[0]
 		strictEqual node.id, "http://example.org/foo"

@@ -27,9 +27,9 @@ test "basic initialization", ->
 	strictEqual viz.height(), 480
 
 test "highlight active node", ->
-	nodeShape = () -> "M 1,1 L1,1 1,1 1,1Z"
-	edgePath = () -> "M 1,1 L 1,1"
-	size = () -> 10
+	nodeShape = -> "M 1,1 L1,1 1,1 1,1Z"
+	edgePath = -> "M 1,1 L 1,1"
+	size = -> 10
 	color = "#F00"
 	node_ids = ["foo", "bar", "baz"]
 	edges = [["foo", "bar"], ["foo", "baz"]]

@@ -44,12 +44,12 @@ class ns.Presenter
 		return { nodes, edges }
 
 	augmentNode: (node) ->
-		size = () ->
+		size = ->
 			size = (@degree || 1) * 10 + 100 # XXX: arbitrary
 			return Math.sqrt(size) # shape size is in px²
 		_shape = @nodeShape[node.type] or @nodeShape["default"]
 		_shape = @symbolGen.type(_shape)
-		shape = () -> _shape.size(@size())()
+		shape = -> _shape.size(@size())()
 		color = @nodeColorIndex[node.type] or @nodeColorIndex["default"]
 		color = @colorGen(color)
 		return new ns.RenderNode(node.id, node.type, node.label, shape, size,
@@ -58,7 +58,7 @@ class ns.Presenter
 	augmentEdge: (edge) ->
 		className = @edgeClass[if edge.directed then "directed" else "default"]
 		_path = @edgePath[if edge.directed then "directed" else "default"]
-		path = () -> _path(@source, @target)
+		path = -> _path(@source, @target)
 		weight = @edgeWeight[edge.type] or @edgeWeight["default"]
 		weight = Math.sqrt(weight * 3) # XXX: arbitrary
 		return new ns.RenderEdge(edge.source, edge.target, edge.type,

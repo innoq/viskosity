@@ -1,10 +1,10 @@
 ns = this.VISKOSITY
 
 module "triplestore", {
-	setup: () ->
+	setup: ->
 		@namespaces = ns.namespaces
 		ns.namespaces = {}
-	teardown: () ->
+	teardown: ->
 		ns.namespaces = @namespaces
 }
 
