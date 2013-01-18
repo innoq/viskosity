@@ -1,4 +1,4 @@
-this.VISKOSITY = ns = {}
+ns = this.VISKOSITY
 ns.namespaces = # XXX: should not be a global, but an instance (e.g. `Context`?)
 	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	rdfs: "http://www.w3.org/2000/01/rdf-schema#"
