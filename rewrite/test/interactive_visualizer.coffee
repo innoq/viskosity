@@ -41,7 +41,7 @@ test "highlight active node", ->
 
 	container = $("<div />").appendTo(@fixtures)
 	graph = new ns.InteractiveVisualizer(container, data,
-			fetcher: (node, store, callback) -> callback()
+			fetcher: (node, callback) -> callback()
 			width: 640,
 			height: 480)
 	graph.render()

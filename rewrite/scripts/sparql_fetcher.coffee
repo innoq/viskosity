@@ -3,17 +3,17 @@ ns = this.VISKOSITY
 
 
 ns.sparqlFetcher = (endpoint) ->
-	return (node, store, callback) ->
-		new Request(endpoint, node.id, store, callback)
+	return (node, callback) ->
+		new Request(endpoint, node.id, callback)
 
 
 class Request
 
-	constructor: (@endpoint, @subject, @store, @callback) ->
+	constructor: (endpoint, subject, callback) ->
 		rdfs = ns.namespaces.rdfs
 		sparql = """
 			SELECT DISTINCT ?prd ?obj ?olabel WHERE {
-				<#{@subject}> ?prd ?obj .
+				<#{subject}> ?prd ?obj .
 				OPTIONAL {
 					?labelClass <#{rdfs}subPropertyOf> <#{rdfs}label> .
 					?obj ?labelClass ?olabel .
@@ -26,22 +26,25 @@ class Request
 			data: { query: sparql },
 			headers: { Accept: "application/sparql-results+json" },
 			dataType: "json",
-			success: => @processResponse.apply(this, arguments)
+			success: (data, status, xhr) => callback(@convert(data, subject))
 		})
 
-	processResponse: (data, status, xhr) ->
+	convert: (sparqlResults, subject) ->
 		triples = {}
-		for result in data.results.bindings
+
+		register = (subject, predicate, object) ->
+			triples[subject] ||= {}
+			triples[subject][predicate] ||= []
+			triples[subject][predicate].push(object)
+
+		for result in sparqlResults.results.bindings
 			predicate = result.prd.value # always a URI
 			object = result.obj
 
-			triples[@subject] ||= {}
-			triples[@subject][predicate] ||= []
-			triples[@subject][predicate].push(object)
+			register(subject, predicate, object)
 
-			#triples[object] ||= {}
-			#triples[object] ||= {}
+			if result.olabel
+				register(object.value, "#{ns.namespaces.rdfs}label",
+						type: "literal", value: result.olabel.value)
 
-		@store.addNode("foo")
-
-		@callback()
+		return triples

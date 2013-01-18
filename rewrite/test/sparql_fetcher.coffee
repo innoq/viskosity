@@ -2,26 +2,23 @@ $ = jQuery
 ns = this.VISKOSITY
 
 rdf = ns.namespaces.rdf
+rdfs = ns.namespaces.rdfs
 skos = "http://www.w3.org/2004/02/skos/core#"
 sparqlResults =
 	head:
 		vars: ["prd", "obj", "olabel"]
 	results:
-		bindings: [
+		bindings: [{
 			prd: { type: "uri", value: "#{rdf}type" }
 			obj: { type: "uri", value: "#{skos}Concept" }
-			olabel: { type: "literal", "xml:lang": "en", value: "Foo" }
-		]
-
-
-class MockStore
-
-	constructor: ->
-		@nodes=[]
-		@edges=[]
-
-	addNode: (node) ->
-		@nodes.push(node)
+		}, {
+			prd: { type: "uri", value: "#{skos}prefLabel" }
+			obj: { type: "literal", value: "Foo" }
+		}, {
+			prd: { type: "uri", value: "#{skos}narrower" }
+			obj: { type: "uri", value: "http://example.org/bar" }
+			olabel: { type: "literal", "xml:lang": "en", value: "Bar" }
+		}]
 
 
 module "SPARQL fetcher"
@@ -45,9 +42,8 @@ module "SPARQL fetcher"
 
 asyncTest "query requests", ->
 	fetcher = ns.sparqlFetcher("/sparql")
-	store = new MockStore
 
-	fetcher({ id: "http://example.org/foo" }, store, =>
+	fetcher({ id: "http://example.org/foo" }, =>
 		strictEqual @reqCount, 1
 		strictEqual @data.reqMethod, "POST"
 		strictEqual @data.reqHeaders.Accept, "application/sparql-results+json"
@@ -64,12 +60,17 @@ asyncTest "query requests", ->
 
 asyncTest "store updates", ->
 	fetcher = ns.sparqlFetcher("/sparql")
-	store = new MockStore
 
-	fetcher({ id: "http://example.org/foo" }, store, ->
-		strictEqual store.nodes.length, 1
-		node = store.nodes[0]
-		strictEqual node.id, "http://example.org/foo"
-		strictEqual node.type, "#{skos}Concept"
-		strictEqual node.label, "Foo"
+	fetcher({ id: "http://example.org/foo" }, (triples) ->
+		strictEqual Object.keys(triples).length, 2
+		strictEqual triples["http://example.org/foo"]["#{rdf}type"].length, 1
+		strictEqual triples["http://example.org/foo"]["#{skos}prefLabel"].length, 1
+		strictEqual triples["http://example.org/foo"]["#{skos}prefLabel"][0].type, "literal"
+		strictEqual triples["http://example.org/foo"]["#{skos}prefLabel"][0].value, "Foo"
+		strictEqual triples["http://example.org/foo"]["#{skos}narrower"].length, 1
+		strictEqual triples["http://example.org/foo"]["#{skos}narrower"][0].type, "uri"
+		strictEqual triples["http://example.org/foo"]["#{skos}narrower"][0].value, "http://example.org/bar"
+		strictEqual triples["http://example.org/bar"]["#{rdfs}label"].length, 1
+		strictEqual triples["http://example.org/bar"]["#{rdfs}label"][0].type, "literal"
+		strictEqual triples["http://example.org/bar"]["#{rdfs}label"][0].value, "Bar"
 		start())
