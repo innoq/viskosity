@@ -17,6 +17,8 @@ dependencies:
 	$(call download, "lib/jquery.js", \
 		"http://ajax.googleapis.com/ajax/libs/jquery/$(jquery_version)/jquery.min.js")
 	# dev-only
+	$(call download, "lib/mockjax.js", \
+		"https://raw.github.com/appendto/jquery-mockjax/master/jquery.mockjax.js")
 	$(call download, "lib/qunit.js", \
 		"http://code.jquery.com/qunit/qunit-$(qunit_version).js")
 	$(call download, "lib/qunit.css", \
