@@ -8,7 +8,8 @@ download = \
 
 test:
 	@phantomjs lib/phantomjs-qunit-runner.js test/index.html | \
-			 sed "s/[^0 ][^0 ]* failed/\x1b[31m&\x1b[0m/"
+			 sed -e "s/[^0 ][^0 ]* failed/\x1b[31m&\x1b[0m/" \
+					-e  "s/Failed assertion: expected: \(.*\), but was: \(.*\)/\n    assertion failed\n    \x1b[31;1mexpected: \1\x1b[0m\n    \x1b[32;1mactual  : \2\x1b[0m/"
 
 dependencies:
 	mkdir -p lib
