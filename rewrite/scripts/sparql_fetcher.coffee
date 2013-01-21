@@ -21,11 +21,11 @@ class Request
 			}
 		"""
 		$.ajax({
-			type: "POST",
-			url: @endpoint,
-			data: { query: sparql },
-			headers: { Accept: "application/sparql-results+json" },
-			dataType: "json",
+			type: "POST"
+			url: @endpoint
+			data: { query: sparql }
+			headers: { Accept: "application/sparql-results+json" }
+			dataType: "json"
 			success: (data, status, xhr) => callback(@convert(data, subject))
 		})
 
