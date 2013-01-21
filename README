@@ -1,4 +1,5 @@
 ViSKOSity - visual SKOS browser
+
 https://github.com/innoq/viskosity
 
 
@@ -14,21 +15,32 @@ Dependencies
 
 * [jQuery](http://jquery.com) (MIT)
 * [D3](http://d3js.org) (BSD)
-* [rdfQuery](http://code.google.com/p/rdfquery/) (MIT) - only for RDF Provider
 
 
 Architecture
 ============
 
-* `graph.js` provides the basic visualization, based on [D3](http://d3js.org)
-* `igraph.js` extends this module to provide interactive features
-* data retrieval occurs through so-called providers - this adaptor mechanism is
-  documented in `sample_provider.js`
+[TODO]
+
+
+Tests and Code Coverage
+=======================
+
+The test suite is located at `test/index.html`. It can be run either in the
+browser or headlessly via `make test` (using PhantomJS).
+
+[Blanket.js](http://migrii.github.com/blanket/) is being used for code coverage.
+This requires the test suite to be accessed via HTTP, e.g. using
+[SimpleHTTPServer](http://www.linuxjournal.com/content/tech-tip-really-simple-http-server-python)
+or [servedir](https://github.com/remy/servedir):
+
+    $ python -m SimpleHTTPServer &
+    $ sensible-browser http://localhost:8000/test/index.html?coverage=true
 
 
 License
 =======
 
-Copyright 2012 innoQ Deutschland GmbH
+Copyright 2012-2013 innoQ Deutschland GmbH
 
 Licensed under the Apache License, Version 2.0
