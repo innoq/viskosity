@@ -37,13 +37,13 @@ TRIPLES = [{
 test "basic initialization", ->
 	container = $("<div />").appendTo(@fixtures)
 	graph = new ns.InteractiveVisualizer(container, null,
-			fetcher: "dummy"
+			provider: "dummy"
 			width: 640
 			height: 480)
 	graph.render()
 	viz = $("svg", container)
 
-	strictEqual graph.fetcher, "dummy"
+	strictEqual graph.provider, "dummy"
 	strictEqual viz.length, 1
 	strictEqual viz.width(), 640
 	strictEqual viz.height(), 480
@@ -59,8 +59,7 @@ test "dynamic/interactive extension", ->
 		return new ns.Presenter(data)
 
 	graph = new ns.InteractiveVisualizer(container, triples2graph(TRIPLES[0]),
-			fetcher: (node, callback) -> callback(TRIPLES[1])
-			converter: triples2graph
+			provider: (node, callback) -> callback(triples2graph(TRIPLES[1]))
 			width: 640
 			height: 480)
 	graph.render()
@@ -88,8 +87,7 @@ test "highlight active node", ->
 
 	container = $("<div />").appendTo(@fixtures)
 	graph = new ns.InteractiveVisualizer(container, data,
-			fetcher: (node, callback) -> callback({})
-			converter: (triples) -> nodes: [], edges: []
+			provider: (node, callback) -> callback(nodes: [], edges: [])
 			width: 640
 			height: 480)
 	graph.render()

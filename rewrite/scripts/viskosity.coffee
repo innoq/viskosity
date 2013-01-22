@@ -16,7 +16,6 @@ class this.VISKOSITY
 	constructor:  (container, data, settings) ->
 		ns = VISKOSITY # XXX: redundant and hacky
 
-		@fetcher = settings.fetcher
 		@rationalizer = settings.rationalizer || ns.Rationalizer
 		@presenter = settings.presenter || ns.Presenter
 		@visualizer = settings.visualizer
@@ -32,9 +31,13 @@ class this.VISKOSITY
 			data = new @rationalizer(data, @nodeTypes, @relTypes, @labelTypes)
 			return new @presenter(data)
 
+		if settings.fetcher
+			@provider = (node, callback) ->
+				settings.fetcher(node, (triples) ->
+					callback(triples2graph(triples)))
+
 		graph = new @visualizer(container, triples2graph(data),
-				fetcher: @fetcher
-				converter: triples2graph
+				provider: @provider
 				width: settings.width
 				height: settings.height)
 		graph.render()
