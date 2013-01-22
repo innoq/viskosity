@@ -19,22 +19,15 @@ class ns.Visualizer
 		width = settings.width or container.width()
 		height = settings.height or container.height()
 
-		data.nodes ||= []
-		data.edges ||= []
-		# turn edges' node IDs into object references -- FIXME: must be reusable outside the initialization
-		nodeIndex = {}
-		for node in data.nodes
-			nodeIndex[node.id] = node
-		for edge in data.edges
-			edge.source = nodeIndex[edge.source]
-			edge.target = nodeIndex[edge.target]
+		@store = new ns.GraphStore(data.nodes, data.edges)
 
 		@root = d3.select(container[0]).append("svg").
 				attr("width", width).attr("height", height)
 		@graph = d3.layout.force().size([width, height]).charge(@charge).
 				linkDistance(@linkDistance).linkStrength(@linkStrength)
 
-		@graph.nodes(data.nodes).links(data.edges)
+		# NB: intentionally retaining object identity for nodes and links/edges
+		@graph.nodes(@store.nodes).links(@store.edges)
 
 		@indicator = @root.append("text").text("loading…").
 				attr("x", width / 2).attr("y", height / 2).
