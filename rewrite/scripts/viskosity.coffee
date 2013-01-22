@@ -28,11 +28,13 @@ class this.VISKOSITY
 		@labelTypes = settings.labelTypes
 		@relTypes = settings.relTypes
 
-		data = new @rationalizer(data, @nodeTypes, @relTypes, @labelTypes)
-		data = new @presenter(data)
+		triples2graph = (data) ->
+			data = new @rationalizer(data, @nodeTypes, @relTypes, @labelTypes)
+			return new @presenter(data)
 
-		graph = new @visualizer(container, data,
+		graph = new @visualizer(container, triples2graph(data),
 				fetcher: @fetcher
+				converter: triples2graph
 				width: settings.width
 				height: settings.height)
 		graph.render()
