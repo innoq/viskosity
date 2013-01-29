@@ -38,6 +38,9 @@ class this.VISKOSITY
 
 		graph = new @visualizer(container, triples2graph(data),
 				provider: @provider
+				nodeGenerator: ((id) =>
+					node = new ns.Node(id)
+					@presenter.prototype.augmentNode(node))
 				width: settings.width
 				height: settings.height)
 		graph.render()

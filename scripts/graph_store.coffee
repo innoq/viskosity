@@ -3,10 +3,12 @@ ns = this.VISKOSITY
 
 class ns.GraphStore
 
-	constructor: (nodes=[], edges=[]) ->
+	constructor: (nodes=[], edges=[], nodeGenerator) ->
 		@nodes = []
 		@edges = []
 		@cache = nodes: {}, edges: {}
+
+		@nodeGenerator = nodeGenerator || (id) -> new ns.Node(id) # TODO: document
 
 		@addNode(node) for node in nodes
 		@addEdge(edge) for edge in edges
@@ -58,7 +60,7 @@ class ns.GraphStore
 
 			# make sure endpoint exists
 			unless node
-				node = new ns.Node(nodeID)
+				node = @nodeGenerator(nodeID)
 				@addNode(node)
 
 			# replace with object reference

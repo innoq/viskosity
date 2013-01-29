@@ -19,7 +19,8 @@ class ns.Visualizer
 		width = settings.width or container.width()
 		height = settings.height or container.height()
 
-		@store = new ns.GraphStore(data.nodes, data.edges)
+		@store = new ns.GraphStore(data.nodes, data.edges,
+				settings.nodeGenerator) # TODO: document
 
 		@root = d3.select(container[0]).append("svg").
 				attr("width", width).attr("height", height)
